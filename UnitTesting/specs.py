@@ -1,9 +1,14 @@
+
+
 # specs.py
 """Python Essentials: Unit Testing.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 321
+09/04/23
 """
+
+import itertools
+import random
 
 def add(a, b):
     """Add two numbers."""
@@ -20,7 +25,7 @@ def divide(a, b):
 def smallest_factor(n):
     """Return the smallest prime factor of the positive integer n."""
     if n == 1: return 1
-    for i in range(2, int(n**.5)):
+    for i in range(2, int(n**.5) + 1):  #must include the square root
         if n % i == 0: return i
     return n
 
@@ -92,11 +97,11 @@ class Fraction(object):
         else:
             return float(self) == other
 
-    def __add__(self, other):
-        return Fraction(self.numer*other.numer + self.denom*other.denom,
+    def __add__(self, other): #error fixed here
+        return Fraction(self.numer*other.denom + self.denom*other.numer,
                                                         self.denom*other.denom)
-    def __sub__(self, other):
-        return Fraction(self.numer*other.numer - self.denom*other.denom,
+    def __sub__(self, other): #error fixed here
+        return Fraction(self.numer*other.denom - self.denom*other.numer,
                                                         self.denom*other.denom)
     def __mul__(self, other):
         return Fraction(self.numer*other.numer, self.denom*other.denom)
@@ -123,7 +128,44 @@ def count_sets(cards):
             - one or more cards does not have exactly 4 digits, or
             - one or more cards has a character other than 0, 1, or 2.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    #Exception cases
+    if len(cards) != 12:
+        raise ValueError("there are not exactly 12 cards")
+    
+    set_of_cards = set(cards) #eliminates the duplicates for the next statement
+    if len(cards) != len(set_of_cards):
+        raise ValueError("the cards are not all unique")
+    
+    four_digits = True  #to check that all cards have 4 digits
+    for card in cards:
+        if len(card) != 4:
+            four_digits = False
+            break #we no longer need to check the other cards
+    if not four_digits:
+        raise ValueError("one or more cards does not have exactly 4 digits")
+    
+    ternary_cards = True #to check if all characters in each card are 0, 1, 2
+    for card in cards:
+        for char in card:
+            if char not in ['0', '1', '2']:
+                ternary_cards = False
+                break #leaves this loop for efficiency (I don't know how to leave both loops :,,( )
+    if not ternary_cards:
+        raise ValueError("one or more cards has a character other than 0, 1, or 2")
+    
+    num_of_sets = 0
+    while cards != []: #works until no cards are left
+        combinations = itertools.combinations(cards, 3) #all possible combinations of 3 cards
+        found_set = False #used to stop checking when no sets are left
+        for combination in combinations: #goes through each combination
+            if is_set(*combination): #if the set is in the combination
+                found_set = True
+                num_of_sets += 1
+                cards = [card for card in cards if card not in combination] #take out cards that made a set
+                break #now we must eliminate the other combinations
+        if found_set == False:
+            return num_of_sets #no need to keep searching since there are no sets left
+    return num_of_sets
 
 def is_set(a, b, c):
     """Determine if the cards a, b, and c constitute a set.
@@ -136,4 +178,7 @@ def is_set(a, b, c):
             and c are either the same or all different for i=1,2,3,4.
         False if a, b, and c do not form a set.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    for i in range(4):
+        if int(a[i]) + int(b[i]) + int(c[i]) not in [0, 3, 6]:
+            return False
+    return True
