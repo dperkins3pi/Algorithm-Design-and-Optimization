@@ -15,6 +15,8 @@ class Node:
         Raises:
             TypeError: if data is not of type int, float, or str.
         """
+        if type(data) not in [int, float, str]:
+            raise TypeError("Data in Node must be an int, float, or str")
         self.value = data
 
 
@@ -45,6 +47,7 @@ class LinkedList:
         """
         self.head = None
         self.tail = None
+        self.length = 0        # Current size of list
 
     def append(self, data):
         """Append a new node containing the data to the end of the list."""
@@ -61,6 +64,7 @@ class LinkedList:
             new_node.prev = self.tail               # tail <-- new_node
             # Now the last node in the list is new_node, so reassign the tail.
             self.tail = new_node
+        self.length += 1    #the list is 1 longer
 
     # Problem 2
     def find(self, data):
@@ -80,7 +84,22 @@ class LinkedList:
             >>> l.find('f')
             ValueError: <message>
         """
-        raise NotImplementedError("Problem 2 Incomplete")
+        #Set initial index
+        index = self.head
+
+        if index is None: #do not operate if list is empty
+            raise ValueError(f"'{data}' is not in the list")
+        
+        while index is not None: #iterate through list until value does not exist
+            if index.value == data: #the item is found
+                return index #return the object, not the value
+            index = index.next #go to next item
+
+        #if statement does not return, the node is not in the list
+        raise ValueError(f"'{data}' is not in the list")
+
+        
+
 
     # Problem 2
     def get(self, i):
@@ -101,7 +120,17 @@ class LinkedList:
             >>> l.get(5)
             IndexError: <message>
         """
-        raise NotImplementedError("Problem 2 Incomplete")
+        if i < 0 or i >= self.length:  #check if index is in range
+            raise IndexError(f"index '{i}' out of range")
+        
+        #start with first node
+        the_node = self.head
+        for index in range(i):
+            the_node = the_node.next  #update node depending on index number
+        
+        return the_node
+
+        
 
     # Problem 3
     def __len__(self):
@@ -118,7 +147,7 @@ class LinkedList:
             >>> len(l)
             4
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        return self.length
 
     # Problem 3
     def __str__(self):
@@ -132,7 +161,20 @@ class LinkedList:
             >>> print(l1)               |   >>> print(l2)
             [1, 3, 5]                   |   ['a', 'b', 'c']
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        if self.length == 0: #the list is empty
+            return "[]"
+        
+        the_list = "["  #first part of string
+        index = self.head   
+        while index is not None:  #iterate through linked list
+            the_list += repr(index.value)  #add object to string, in quotes if it is a string
+            index = index.next  #move to next index
+            if index is None: #no need to add comma
+                break  
+            the_list += ", " #separate the objects
+        the_list += "]" #finish the list
+
+        return the_list
 
     # Problem 4
     def remove(self, data):
@@ -190,3 +232,10 @@ def prob7(infile, outfile):
         outfile (str): the file to write to.
     """
     raise NotImplementedError("Problem 7 Incomplete")
+
+
+if __name__ == "__main__":
+    l = LinkedList()
+    for x in ['1', '7', '77']:
+        l.append(x)
+    print(l)

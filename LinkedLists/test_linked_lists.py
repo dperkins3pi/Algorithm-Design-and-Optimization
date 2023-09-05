@@ -80,8 +80,22 @@ def test_get(setup_linked_lists):
     #NOTE:This test will fail unless you edit the statement as needed
 
 
-def test_problem3():
-    """
-    Write unit tests for both the __len__() and __str__() methods.
-    """
-    raise NotImplementedError("No code written for problem 3 unit test!!")
+# def test_problem3():
+#     """
+#     Write unit tests for both the __len__() and __str__() methods.
+#     """
+#     raise NotImplementedError("No code written for problem 3 unit test!!")
+
+def test_len(setup_linked_lists):
+    """Tests __len__ function"""
+    list_1, list_2 = setup_linked_lists
+
+    assert len(list_1) == 4, "Failed on calculating the length of list1"
+    assert len(list_2) == 0, "Failed on calculating the length of the empty list2"
+
+def test_str(setup_linked_lists):
+    """Tests __str__ function"""
+    list_1, list_2 = setup_linked_lists
+
+    assert list_1.__str__() == "['a', 'b', 'c', 'd']", "Failed on returning the list as a string"
+    assert list_2.__str__() == "[]", "Failed on returning an empty list as a string"
