@@ -1,8 +1,8 @@
 # linked_lists.py
 """Volume 2: Linked Lists.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 321
+09/07/23
 """
 
 
@@ -40,10 +40,11 @@ class LinkedList:
     Attributes:
         head (LinkedListNode): the first node in the list.
         tail (LinkedListNode): the last node in the list.
+        length (int): the length of the list
     """
     def __init__(self):
-        """Initialize the head and tail attributes by setting
-        them to None, since the list is empty initially.
+        """Initialize the head, tail, and length attributes by setting
+        them to None or 0, since the list is empty initially.
         """
         self.head = None
         self.tail = None
@@ -192,7 +193,16 @@ class LinkedList:
             >>> print(l1)               |   >>> l3.remove(10)
             ['e', 'o']                  |   ValueError: <message>
         """
-        raise NotImplementedError("Problem 4 Incomplete")
+        target = self.find(data) #find node and return ValueError if not in list
+        if target == self.head: #if the target is the first node
+            self.head = target.next #move head of list
+        else:
+            target.prev.next = target.next  #connect previous node to following node
+        if target == self.tail: #if the target is at the end of the list
+            self.tail = target.prev #move tail of list
+        else:
+            target.next.prev = target.prev #connect next node to previous node
+        self.length -= 1
 
     # Problem 5
     def insert(self, index, data):
@@ -216,11 +226,109 @@ class LinkedList:
             >>> print(l1)               |
             ['a', 'b', 'c', 'd']        |
         """
-        raise NotImplementedError("Problem 5 Incomplete")
+        if index < 0 or index > self.length: #index out of range
+            raise IndexError(f"The index, {index} is out of range of the list of length {self.length}")
+        elif index == self.length: #just add data to end of list
+            self.append(data)
+        else:
+            new_node = LinkedListNode(data) #create the new node
+            if index == 0: #add to head
+                new_node.next = self.head #set link to next value
+                self.head = new_node #change head
+                self.length += 1 #adjust list length
+            else:
+                target = self.head #start from head
+                for i in range(index): #iterate through list
+                    target = target.next #move to next spot
+                new_node.prev = target.prev #new node reference left to index before
+                new_node.next = target #new node reference right to what used to be there
+                target.prev.next = new_node #links previous node to the new one
+                target.prev = new_node #object previously there references left to new_node
+                self.length += 1 #adjust list length
+
+
+            
+            
 
 
 # Problem 6: Deque class.
+class Deque(LinkedList):
+    """
+    Double-ended queue. Only data can be accessed/added to end or begining
 
+    Attributes:
+        head (LinkedListNode): the first node in the list.
+        tail (LinkedListNode): the last node in the list.
+        length (int): the length of the list
+    """
+    def __init__(self):
+        """
+        Initialize the head, tail, length attributes by setting
+        them to None or 0, since the list is empty initially.
+        """
+        LinkedList.__init__(self)
+
+    def pop(self):
+        """
+        Removes and returns the last item from the Deque
+        """
+        if self.length == 0:
+            raise ValueError("The list is empty")
+        elif self.length == 1: #only node in list, so just remove the list
+            the_object = self.tail #store object before removing it
+            self.head = None
+            self.tail = None
+            self.length = 0
+            return the_object
+        else:
+            the_object = self.tail #store object before removing it
+            self.tail.prev.next = None #remove connection from last object to it
+            self.tail = self.tail.prev #move tail of deque
+            self.length -= 1 #deque is smaller
+            return the_object
+        
+    def popleft(self):
+        """
+        Removes and returns the first item from the Deque
+        """
+        if self.length == 0:
+            raise ValueError("The list is empty")
+        elif self.length == 1: #only node in list, su just remove the listr
+            self.head = None
+            self.tail = None
+            self.length = 0
+            return the_object
+        else:
+            the_object = self.head #store object before removing it
+            self.head.next.prev = None #remove connection from first object to it
+            self.head = self.head.next #move head
+            self.length -= 1 #deque is smaller
+            return the_object
+        
+    def appendleft(self, data):
+        """Append a new node to the left containing the data to the end of the list."""
+        # Create a new node to store the input data.
+        new_node = LinkedListNode(data)
+        if self.head is None:
+            # If the list is empty, assign the head and tail attributes to
+            # new_node, since it becomes the first and last node in the list.
+            self.head = new_node
+            self.tail = new_node
+        else:
+            self.head.prev = new_node               # head --> new_node
+            new_node.next = self.head               # head <-- new_node
+            # Now the first node in the list is new_node, so reassign the head
+            self.head = new_node
+        self.length += 1    #the list is 1 longer
+
+    def remove(*args, **kwargs):
+        """Ovewrite O(n) function in list"""
+        raise NotImplementedError("Use pop() or popleft() for removal")
+    
+    def insert(*args, **kwargs):
+        """Ovewrite O(n) function in list"""
+        raise NotImplementedError("Use append() or appendleft() for insertion")
+    
 
 # Problem 7
 def prob7(infile, outfile):
@@ -231,11 +339,33 @@ def prob7(infile, outfile):
         infile (str): the file to read from.
         outfile (str): the file to write to.
     """
-    raise NotImplementedError("Problem 7 Incomplete")
+    #initialize the Deque
+    contents = Deque()
+
+    #read from file
+    with open(infile, 'r') as my_file:
+        line = True
+        while line:  #until file is done
+            line = str(my_file.readline()) #get line
+            contents.append(line) #append the line
+
+    #write into the outfile
+    print(contents)
+    with open(outfile, 'w') as my_file:
+        #write twice to get rid of error of printing two lines on same line
+        my_file.write(contents.pop().value)
+        my_file.write(contents.pop().value)
+        my_file.write("\n")
+        while len(contents) > 0:
+            my_file.write(contents.pop().value)
+
+        
 
 
 if __name__ == "__main__":
-    l = LinkedList()
-    for x in ['1', '7', '77']:
-        l.append(x)
-    print(l)
+    # l = Deque()
+    # for x in ['a', 'b', 'c', 'd']:
+    #     l.append(x)
+    # print(l, len(l))
+    # l.remove(2,"2")
+    prob7("english.txt", "output_file.txt")
