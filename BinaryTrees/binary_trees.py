@@ -1,13 +1,14 @@
 # binary_trees.py
 """Volume 2: Binary Trees.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 321
+09/19/23
 """
 
 # These imports are used in BST.draw().
 import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
+from matplotlib import pyplot as plt
 
 
 class SinglyLinkedListNode:
@@ -53,7 +54,17 @@ class SinglyLinkedList:
         Returns:
             (SinglyLinkedListNode): the node containing the data.
         """
-        raise NotImplementedError("Problem 1 Incomplete")
+        #recursive function to traverse the truee
+        def _step(current):
+            if current is None:  #not in tree
+                raise ValueError(str(data) + " is not in the list")
+            elif current.value == data:  #found the node
+                return current
+            else:   #move to next node
+                return _step(current.next)
+            
+        #start the recursion
+        return _step(self.head)
 
 
 class BSTNode:
@@ -118,7 +129,31 @@ class BST:
             [1, 5, 7]                           |                  (8)
             [8]                                 |
         """
-        raise NotImplementedError("Problem 2 Incomplete")
+        # Recursive function call
+        def _step(current):
+            """Recursively step through the tree until
+            If the data is already in the tree, raise a ValueError
+            """
+            new_Node = BSTNode(data)            # Create the new node
+            if self.root is None:               # Base case 1: empty tree, assign root
+                self.root = new_Node
+            elif current is None:               # Base case 2: Found spot for the new node
+                current = new_Node
+            elif data == current.value:         # Base case 3: data already in the tree
+                raise ValueError(f"{str(data)} is already in the Tree")
+            elif data < current.value:          # Recursively search left.
+                _step(current.left)
+                if current.left is None:        # if it is the correct spot, connect in tree
+                    current.left = new_Node
+                    new_Node.prev = current
+            else:                              # Recursively search left. 
+                _step(current.right)
+                if current.right is None:      # if it is the correct spot, connect in tree
+                    current.right = new_Node
+                    new_Node.prev = current
+            
+        #call the recursive function
+        _step(self.root)
 
     # Problem 3
     def remove(self, data):
@@ -318,3 +353,24 @@ def prob4():
     and search times. Use log scales where appropriate.
     """
     raise NotImplementedError("Problem 4 Incomplete")
+
+if __name__=="__main__":
+    # problem 1
+    # my_linked_list = SinglyLinkedList()
+    # my_linked_list.append(5)
+    # my_linked_list.append(6)
+    # print(my_linked_list.iterative_find(8))
+    # print(my_linked_list.recursive_find(8))
+
+    # problem 2
+    my_Tree = BST()
+    my_Tree.insert(5)
+    my_Tree.insert(4)
+    my_Tree.insert(6)
+    my_Tree.insert(7)
+    my_Tree.insert(1)
+    my_Tree.insert(2)
+    print(my_Tree)
+    #my_Tree.draw()
+
+    #problem 3
