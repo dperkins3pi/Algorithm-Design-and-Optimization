@@ -186,7 +186,80 @@ class BST:
             >>> print(t2)                       | >>> t4.remove(5)
             []                                  | ValueError: <message>
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        print(self)
+        print(f"removing {data}")
+        # Recursive function call
+        def _step(current):
+            """Recursively step through the tree until
+            If the data is not in the tree, raise a ValueError
+            """
+            if self.root == None:             # Base case 1: Tree is empty
+                raise ValueError("The tree is empty")
+            elif current is None:             # Base case 2: Found spot for the new node
+                raise ValueError(f"There is no node in the tree containing {data}")
+            elif current.value == data:       # Value is found
+
+                #Leaf Node
+                if current.right is None and current.left is None:  
+                    #check if the node is on the left or right of parent node
+                    print("value ", current.value)
+                    try:
+                        if current.prev.left is None:
+                            print(current.prev.value)
+                            print("none")
+                            #Error is here; current.prev.value should be 4, not 3 in this specific case
+                    except:
+                        print()
+                    if current is self.root:
+                        self.root = None
+                    elif current.prev.left is not None and current.prev.left.value == data:
+                        current.prev.left = None   #remove the node
+                    elif current.prev.right.value == data:
+                        current.prev.right = None  #remove the node
+
+                #Node with one Child
+                if current.right is not None and current.left is None:  #child on right side
+                    if current is self.root:     #the node is the root
+                        self.root = current.right   
+                        current.prev = None
+                    #check if the node is on the left or right of parent node
+                    elif current.prev.left is not None and current.prev.left.value == data:
+                        current.prev.left = current.right   #remove the node
+                        current.right.prev = current.prev.left
+                    elif current.prev.right.value == data:
+                        current.prev.right = current.right   #remove the node
+                        current.right.prev = current.prev.right
+                if current.right is None and current.left is not None:  #child on left side
+                    if current is self.root:
+                        self.root = current.left   #the node is the root
+                        current.prev = None
+                    #check if the node is on the left or right of parent node
+                    elif current.prev.left is not None and current.prev.left.value == data:
+                        current.prev.left = current.left   #remove the node
+                        current.left.prev = current.prev.left
+                    elif current.prev.right.value == data:
+                        current.prev.right = current.left   #remove the node
+                        current.left.prev = current.prev.right
+
+                #Node with two children
+                if current.right is not None and current.left is not None:
+                    # find predecessor
+                    predecessor = current.left
+                    while predecessor.right is not None:
+                        predecessor = predecessor.right
+                   
+                    #delete the predecessor and store its value in current
+                    predecessor_value = predecessor.value  #store its value
+                    self.remove(predecessor_value)
+                    current.value = predecessor_value                    
+
+            elif data > current.value:        # Search in right half of the tree
+                _step(current.right)
+            elif data < current.value:        # Search in left half of the tree
+                _step(current.left)
+
+        _step(self.root)
+        
 
     def __str__(self):
         """String representation: a hierarchical view of the BST.
@@ -228,7 +301,7 @@ class BST:
                     nodes.append(child)
 
         # Plot the graph. This requires graphviz_layout (pygraphviz).
-        nx.draw(G, pos=graphviz_layout(G, prog="dot"), arrows=True,
+        nx.draw(G, arrows=True,
                 with_labels=True, node_color="C1", font_size=8)
         plt.show()
 
@@ -364,13 +437,18 @@ if __name__=="__main__":
 
     # problem 2
     my_Tree = BST()
-    my_Tree.insert(5)
-    my_Tree.insert(4)
     my_Tree.insert(6)
-    my_Tree.insert(7)
+    my_Tree.insert(4)
+    my_Tree.insert(8)
     my_Tree.insert(1)
-    my_Tree.insert(2)
+    my_Tree.insert(5)
+    my_Tree.insert(7)
+    my_Tree.insert(10)
+    my_Tree.insert(3)
+    my_Tree.insert(9)
+    for x in [7, 10, 1, 4]:
+        my_Tree.remove(x)
+
     print(my_Tree)
-    #my_Tree.draw()
 
     #problem 3

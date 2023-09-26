@@ -179,10 +179,10 @@ def prob6():
     plt.show()
 
 
-#if __name__=="__main__":
+if __name__=="__main__":
     #prob1()
     #prob2()
     #prob3()
     #prob4()
-    #prob5()
+    prob5()
     #prob6()
