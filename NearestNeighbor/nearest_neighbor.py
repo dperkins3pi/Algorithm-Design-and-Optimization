@@ -1,11 +1,12 @@
 # nearest_neighbor.py
 """Volume 2: Nearest Neighbor Search.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 321
+9/26/23
 """
 
 import numpy as np
+from scipy import linalg as la
 
 
 # Problem 1
@@ -20,7 +21,12 @@ def exhaustive_search(X, z):
         ((k,) ndarray) the element (row) of X that is nearest to z.
         (float) The Euclidean distance from the nearest neighbor to z.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    norms = []   #list of distances
+    for point in X:
+        norms.append(la.norm(point - z))   #add distance of each point
+    return X[np.argmin(norms)]   #returns the point with smallest distance
+
+
 
 
 # Problem 2: Write a KDTNode class.
@@ -33,6 +39,13 @@ class KDTNode:
         value ((k,) ndarray): a coordinate in k-dimensional space.
         pivot (int): the dimension of the value to make comparisons on.
     """
+    def __init__(self, x):
+        if type(x) is not np.ndarray:  #raise an error if not an array
+            raise TypeError("The input was not a numpy array")
+        self.value = x
+        self.left = None
+        self.right = None
+        self.pivot = None
 
 # Problems 3 and 4
 class KDT:
@@ -80,7 +93,35 @@ class KDT:
                 values in the tree.
             ValueError: if data is already in the tree
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        if self.root is None:   #tree is empty
+            new_node = KDTNode(data)
+            new_node.pivot = 0
+            self.root = new_node
+            self.k = len(data)   #set new k value since tree was empty
+            return
+        elif self.k != len(data):   #data not correct size
+            raise ValueError(f"Data to be inserted is not in R^{self.k}")
+    
+        # Recursive function to step through each node
+        def _step(current, pivot):
+            if current is None:
+                new_node.pivot = pivot                     #Set pivot value based on level in tree
+                return
+            elif data[pivot] == current.value[pivot]:
+                raise ValueError(f"Node with {data[pivot]} on pivot {pivot} is already in the tree")
+            elif data[pivot] < current.value[pivot]:         # Go to left subtree
+                _step(current.left, (pivot + 1) % self.k)  # We call pivot % self.k to find pivot in equivelence class Z_k
+                if current.left is None:                   # Add node to left when empty
+                    current.left = new_node
+            elif data[pivot] > current.value[pivot]:      # Go to right subtree
+                _step(current.right, (pivot + 1) % self.k) 
+                if current.right is None:                  # Add node to right when empty
+                    current.right = new_node
+
+        # Create new node and find its parent
+        new_node = KDTNode(data)
+        _step(self.root, 0)
+
 
     # Problem 4
     def query(self, z):
@@ -139,3 +180,22 @@ def prob6(n_neighbors, filename="mnist_subset.npz"):
         (float): the classification accuracy.
     """
     raise NotImplementedError("Problem 6 Incomplete")
+
+
+if __name__ == "__main__":
+    #problems 1-2
+    # z = np.array([1, 1])
+    # X = np.array([[2, 2],[0, 0]])
+    # print(exhaustive_search(X, z))
+    # print(type(z) is )
+    # my_node = KDTNode(np.array([2,4]))
+    # print(my_node.value)
+
+    #problems 3-4
+    my_tree = KDT()
+    my_tree.insert(np.array([5, 5]))
+    my_tree.insert(np.array([3, 2]))
+    my_tree.insert(np.array([8, 4]))
+    my_tree.insert(np.array([2, 6]))
+    print(my_tree)
+

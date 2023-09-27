@@ -208,14 +208,15 @@ class BST:
                             print(current.prev.value)
                             print("none")
                             #Error is here; current.prev.value should be 4, not 3 in this specific case
+                        if current is self.root:
+                            self.root = None
+                        elif current.prev.left is not None and current.prev.left.value == data:
+                            current.prev.left = None   #remove the node
+                        elif current.prev.right.value == data:
+                            current.prev.right = None  #remove the node
                     except:
                         print()
-                    if current is self.root:
-                        self.root = None
-                    elif current.prev.left is not None and current.prev.left.value == data:
-                        current.prev.left = None   #remove the node
-                    elif current.prev.right.value == data:
-                        current.prev.right = None  #remove the node
+                    
 
                 #Node with one Child
                 if current.right is not None and current.left is None:  #child on right side
@@ -247,11 +248,12 @@ class BST:
                     predecessor = current.left
                     while predecessor.right is not None:
                         predecessor = predecessor.right
-                   
+
+                    print("pre", predecessor.value)
                     #delete the predecessor and store its value in current
                     predecessor_value = predecessor.value  #store its value
-                    self.remove(predecessor_value)
-                    current.value = predecessor_value                    
+                    self.remove(predecessor_value)   
+                    current.value = predecessor_value
 
             elif data > current.value:        # Search in right half of the tree
                 _step(current.right)
@@ -446,9 +448,12 @@ if __name__=="__main__":
     my_Tree.insert(10)
     my_Tree.insert(3)
     my_Tree.insert(9)
+    
     for x in [7, 10, 1, 4]:
         my_Tree.remove(x)
 
+    print(my_Tree)
+    my_Tree.draw()
     print(my_Tree)
 
     #problem 3

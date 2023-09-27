@@ -140,10 +140,11 @@ def prob5():
     axes[1].set_title("Time when the traffic crashes occured 2010-2014 (FARS)")
     axes[1].set_xlabel("Time of day (military time)")
     axes[1].set_ylabel("Frequency of accidents")
-    axes[1].hist(times, bins=np.arange(0, 24))
-
+    axes[1].hist(times, bins=np.arange(1, 24))
+    
     #show the plot
     plt.show()
+
 
 
 # Problem 6

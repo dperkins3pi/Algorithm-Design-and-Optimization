@@ -11,7 +11,19 @@ def test_KDTNode():
     """
     Write at least one unit test for problem 2, the KDTNode initializer.
     """
-    raise NotImplementedError("No code written for problem 2 unit test!!")
+    x = np.random.rand(10)  #create random array
+    myNode = nearest_neighbor.KDTNode(x)
+
+    with pytest.raises(TypeError) as excinfo:
+        nearest_neighbor.KDTNode(0)  #error for non numpy input
+    assert excinfo.value.args[0] == "The input was not a numpy array"
+    print(myNode.value)
+    assert (myNode.value == x).all(), "Incorect value initilization"
+    assert (myNode.left is None), "Incorect left initilization"
+    assert (myNode.right is None), "Incorect right initilization"
+    assert (myNode.pivot is None), "Incorect pivot initilization"
+
+    
 
 #Provided unit tests for problem 3
 @pytest.fixture
