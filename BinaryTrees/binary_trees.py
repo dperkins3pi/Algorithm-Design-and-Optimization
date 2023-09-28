@@ -9,7 +9,10 @@ MATH 321
 import networkx as nx
 from networkx.drawing.nx_agraph import graphviz_layout
 from matplotlib import pyplot as plt
-
+import numpy as np
+import random
+import time
+from matplotlib import pyplot as plt
 
 class SinglyLinkedListNode:
     """A node with a value and a reference to the next node."""
@@ -186,81 +189,79 @@ class BST:
             >>> print(t2)                       | >>> t4.remove(5)
             []                                  | ValueError: <message>
         """
-        print(self)
         print(f"removing {data}")
         # Recursive function call
+        if self.root is None:                       #Base case 1: Tree is empty
+            raise ValueError("The tree is empty")
+        
         def _step(current):
             """Recursively step through the tree until
             If the data is not in the tree, raise a ValueError
             """
-            if self.root == None:             # Base case 1: Tree is empty
-                raise ValueError("The tree is empty")
-            elif current is None:             # Base case 2: Found spot for the new node
+            if current is None:                     #Node not in tree
                 raise ValueError(f"There is no node in the tree containing {data}")
-            elif current.value == data:       # Value is found
+            elif current.value == data:              #Value is found
 
-                #Leaf Node
-                if current.right is None and current.left is None:  
-                    #check if the node is on the left or right of parent node
-                    print("value ", current.value)
-                    try:
-                        if current.prev.left is None:
-                            print(current.prev.value)
-                            print("none")
-                            #Error is here; current.prev.value should be 4, not 3 in this specific case
-                        if current is self.root:
-                            self.root = None
-                        elif current.prev.left is not None and current.prev.left.value == data:
-                            current.prev.left = None   #remove the node
-                        elif current.prev.right.value == data:
-                            current.prev.right = None  #remove the node
-                    except:
-                        print()
-                    
-
-                #Node with one Child
-                if current.right is not None and current.left is None:  #child on right side
-                    if current is self.root:     #the node is the root
-                        self.root = current.right   
+                # Leaf node
+                if current.left is None and current.right is None:
+                    if current is self.root:                  # The leaf node is the root
+                        self.root = None
+                    else:
+                        if current.prev.left is current:      # If the node is a left child
+                            current.prev.left = None
+                        elif current.prev.right is current:   # If the node is a right child
+                            current.prev.right = None
                         current.prev = None
-                    #check if the node is on the left or right of parent node
-                    elif current.prev.left is not None and current.prev.left.value == data:
-                        current.prev.left = current.right   #remove the node
-                        current.right.prev = current.prev.left
-                    elif current.prev.right.value == data:
-                        current.prev.right = current.right   #remove the node
-                        current.right.prev = current.prev.right
-                if current.right is None and current.left is not None:  #child on left side
-                    if current is self.root:
-                        self.root = current.left   #the node is the root
-                        current.prev = None
-                    #check if the node is on the left or right of parent node
-                    elif current.prev.left is not None and current.prev.left.value == data:
-                        current.prev.left = current.left   #remove the node
-                        current.left.prev = current.prev.left
-                    elif current.prev.right.value == data:
-                        current.prev.right = current.left   #remove the node
-                        current.left.prev = current.prev.right
 
-                #Node with two children
+                # Node with only right child
+                elif current.right is not None and current.left is None:
+                    if current is self.root:               # The node is the root
+                        current.right.prev = None
+                        self.root = current.right
+                        current.right = None
+                    else:
+                        if current.prev.left is current:      # If the node is a left child
+                            current.prev.left = current.right
+                        elif current.prev.right is current:   # If the node is a right child
+                            current.prev.right = current.right
+                        current.right.prev = current.prev
+                        current.prev = None
+                        current.right = None
+                
+                # Node with only left child
+                elif current.right is None and current.left is not None:
+                    if current is self.root:               # The node is the root
+                        current.left.prev = None
+                        self.root = current.left
+                        current.left = None
+                    else:
+                        if current.prev.left is current:      # If the node is a left child
+                            current.prev.left = current.left
+                        elif current.prev.right is current:   # If the node is a right child
+                            current.prev.right = current.left
+                        current.left.prev = current.prev
+                        current.prev = None
+                        current.left = None
+
+                # Node with two children
                 if current.right is not None and current.left is not None:
-                    # find predecessor
+                    # Find the predecessor
                     predecessor = current.left
                     while predecessor.right is not None:
                         predecessor = predecessor.right
-
-                    print("pre", predecessor.value)
-                    #delete the predecessor and store its value in current
-                    predecessor_value = predecessor.value  #store its value
-                    self.remove(predecessor_value)   
+                    # Store the predecessor value, remove it, set current to predecessor
+                    predecessor_value = predecessor.value
+                    self.remove(predecessor_value)
                     current.value = predecessor_value
 
+            #step through tree to find the data
             elif data > current.value:        # Search in right half of the tree
-                _step(current.right)
+                 _step(current.right)
             elif data < current.value:        # Search in left half of the tree
-                _step(current.left)
+                 _step(current.left)
+            
+        _step(self.root)        
 
-        _step(self.root)
         
 
     def __str__(self):
@@ -427,7 +428,95 @@ def prob4():
     structure. Plot the number of elements in the structure versus the build
     and search times. Use log scales where appropriate.
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+    with open("english.txt", 'r') as my_file:
+        data = my_file.read().splitlines()  #read file into list
+
+    #initilize data for the graphs
+    size = np.arange(3, 11)**2
+    build_time_linked_list = []
+    build_time_BST = []
+    build_time_AVL = []
+    search_time_linked_list = []
+    search_time_BST = []
+    search_time_AVL = []
+
+    for k in size:
+        subset = random.sample(data, k)  #create random subset
+        to_find = random.sample(subset, 5)  #subset to find items
+        # initialize lists
+
+        #Building time for linked list
+        start = time.time()
+        my_linked_list = SinglyLinkedList()
+        for word in subset:
+            my_linked_list.append(word)
+        end = time.time()
+        build_time_linked_list.append(end - start)
+
+        #Searching time for linked list
+        start = time.time()
+        for x in to_find:
+            my_linked_list.iterative_find(x)
+        end = time.time()
+        search_time_linked_list.append(end - start)
+
+        #Building time for BST
+        start = time.time()
+        my_tree = BST()
+        for word in subset:
+            my_tree.insert(word)
+        end = time.time()
+        build_time_BST.append(end - start)
+
+        #Searching time for BST
+        start = time.time()
+        for x in to_find:
+            my_tree.find(x)
+        end = time.time()
+        search_time_BST.append(end - start)
+
+        #Building time for AVL
+        start = time.time()
+        avl_tree = AVL()
+        for word in subset:
+            avl_tree.insert(word)
+        end = time.time()
+        build_time_AVL.append(end - start)
+
+        #Searching time for AVL
+        start = time.time()
+        for x in to_find:
+            avl_tree.find(x)
+        end = time.time()
+        search_time_AVL.append(end - start)
+
+    print(search_time_linked_list)
+    print(search_time_BST)
+    print(search_time_AVL)
+
+    fig, axes = plt.subplots(1, 2) #arrange plots into 1x2 grid
+    fig.tight_layout(pad = 4) #space out the axes
+    plt.suptitle("Operation Time of Different Data Structures")
+
+    #plot 1
+    axes[0].set_title("Building The Structure")
+    axes[0].loglog(size, build_time_linked_list, label="Linked List")
+    axes[0].loglog(size, build_time_BST, label="BST")
+    axes[0].loglog(size, build_time_AVL, label="AVL")
+    axes[0].legend()
+    axes[0].set_xlabel("Size of the Data Structure")
+    axes[0].set_ylabel("Time taken (seconds)")
+
+    #plot 2
+    axes[1].set_title("Finding An Element")
+    axes[1].loglog(size, search_time_linked_list, label="Linked List")
+    axes[1].loglog(size, search_time_BST, label="BST")
+    axes[1].loglog(size, search_time_AVL, label="AVL")
+    axes[1].legend()
+    axes[1].set_xlabel("Size of the Data Structure")
+    axes[1].set_ylabel("Time taken (seconds)")
+
+    plt.show()
 
 if __name__=="__main__":
     # problem 1
@@ -437,23 +526,19 @@ if __name__=="__main__":
     # print(my_linked_list.iterative_find(8))
     # print(my_linked_list.recursive_find(8))
 
-    # problem 2
-    my_Tree = BST()
-    my_Tree.insert(6)
-    my_Tree.insert(4)
-    my_Tree.insert(8)
-    my_Tree.insert(1)
-    my_Tree.insert(5)
-    my_Tree.insert(7)
-    my_Tree.insert(10)
-    my_Tree.insert(3)
-    my_Tree.insert(9)
+    # # problem 2
+    # my_Tree = BST()
+    # my_Tree.insert(5)
+    # my_Tree.insert(8)
     
-    for x in [7, 10, 1, 4]:
-        my_Tree.remove(x)
+    # #problem 3
+    # print(my_Tree)
+    # for x in [5]:
+    #     my_Tree.remove(x)
+    # print(my_Tree)
 
-    print(my_Tree)
-    my_Tree.draw()
-    print(my_Tree)
+    #prob4()
 
-    #problem 3
+    print()
+
+    
