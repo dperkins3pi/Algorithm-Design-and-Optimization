@@ -7,7 +7,9 @@ MATH 321
 
 import numpy as np
 from scipy import linalg as la
-
+from scipy.spatial import KDTree
+from scipy import stats
+from matplotlib import pyplot as plt
 
 # Problem 1
 def exhaustive_search(X, z):
@@ -134,7 +136,34 @@ class KDT:
             ((k,) ndarray) the value in the tree that is nearest to z.
             (float) The Euclidean distance from the nearest neighbor to z.
         """
-        raise NotImplementedError("Problem 4 Incomplete")
+        #recursive function
+        def kd_search(current, nearest, d):
+            if current is None:         #Base case: dead end
+                return nearest, d
+            
+            # get pivot and vector at the current node
+            x = current.value
+            i = current.pivot
+
+            #Check if current is closer to z than nearest
+            if la.norm(x - z) < d:
+                nearest = current
+                d = la.norm(x - z)
+
+            if z[i] < x[i]:  #Search to the left
+                nearest, d = kd_search(current.left, nearest, d)
+                if z[i] + d >= x[i]:   #Search to the right if needed
+                    nearest, d = kd_search(current.right, nearest, d)
+            else:   #Search to the right of the tree
+                nearest, d = kd_search(current.right, nearest, d)
+                if z[i] - d <= x[i]:    #Search to the left if needed
+                    nearest, d = kd_search(current.left, nearest, d)
+            return nearest, d
+        
+        #call the recursive function and return
+        node, d = kd_search(self.root, self.root, la.norm(self.root.value - z))
+        return node.value, d
+
 
     def __str__(self):
         """String representation: a hierarchical list of nodes and their axes.
@@ -162,7 +191,28 @@ class KDT:
 class KNeighborsClassifier:
     """A k-nearest neighbors classifier that uses SciPy's KDTree to solve
     the nearest neighbor problem efficiently.
+
+    n_neighbors - the number of neighbots to include in the vote (k in k-nearest neighbor)
     """
+    def __init__(self, n_neighbors):
+        self.n_neighbors = n_neighbors
+
+    def fit(self, X, y):
+        self.tree = KDTree(X)  # make a tree from the data to improve nearest search efficiency
+        self.y = y
+
+    def predict(self, z):
+        """
+        Querys the tree for n_neighbor elements of X closes to z
+        Returns the most common label of those neighbors, for machine learning prediction
+        """
+        # find list of the smallest n_neighbors Euclidean distances
+        distances, indices = self.tree.query(z, k=self.n_neighbors)
+        y = [self.y[index] for index in indices]   #convert indices to the elements in the labels
+        return stats.mode(y)[0]   #return the most common label
+
+
+
 
 # Problem 6
 def prob6(n_neighbors, filename="mnist_subset.npz"):
@@ -179,7 +229,17 @@ def prob6(n_neighbors, filename="mnist_subset.npz"):
     Returns:
         (float): the classification accuracy.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    # Extract the data and load into test and training sets
+    data = np.load("mnist_subset.npz")
+    X_train = data["X_train"].astype(np.float64)
+    y_train = data["y_train"]
+    X_test = data["X_test"].astype(np.float64)
+    y_test = data["y_test"]
+    
+    KNeighbor = KNeighborsClassifier(n_neighbors)
+    KNeighbor.fit(X_train, y_train)
+    print("prediction", KNeighbor.predict(X_test))
+    print("y-test", y_test)
 
 
 if __name__ == "__main__":
@@ -189,13 +249,27 @@ if __name__ == "__main__":
     # print(exhaustive_search(X, z))
     # print(type(z) is )
     # my_node = KDTNode(np.array([2,4]))
-    # print(my_node.value)
+    # # print(my_node.value)
 
-    #problems 3-4
-    my_tree = KDT()
-    my_tree.insert(np.array([5, 5]))
-    my_tree.insert(np.array([3, 2]))
-    my_tree.insert(np.array([8, 4]))
-    my_tree.insert(np.array([2, 6]))
-    print(my_tree)
+    # #problems 3-4
+    # my_tree = KDT()
+    # my_tree.insert(np.array([5, 5]))
+    # my_tree.insert(np.array([3, 2]))
+    # my_tree.insert(np.array([8, 4]))
+    # my_tree.insert(np.array([2, 6]))
+    # # print(my_tree.query(np.array([8, 0])))
+    # # print(exhaustive_search(np.array([[5, 5], [3, 2], [8, 4], [2, 6]]), np.array([8, 0])))
 
+    # KNeighbor = KNeighborsClassifier(2)
+    # KNeighbor.fit(np.array([[-981, 1], [27, 2], [4, 4], [4, 6]]), np.array([11, 42, 553, 5533]))
+    # print(KNeighbor.predict(np.array([4, 5])))
+
+    # data = np.random.random((100,5))
+    # target = np.random.random(5)
+    # tree = KNeighborsClassifier(3)
+    # tree.fit(data, target)
+    # .fit(np.array([[-981, 1], [27, 2], [4, 4], [4, 6]]), np.array([11, 42, 553, 5533]))
+    # print(KNeighbor.predict(np.array([0, 0])))
+
+    prob6(4)
+    
