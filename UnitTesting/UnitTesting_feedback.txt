@@ -1,0 +1,49 @@
+10/03/23 13:02
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 4 (10 points):
+Score += 10
+
+Problem 6 (10 points):
+count_sets() failed for hand 1022, 1122, 0100, 2021, 0010, 2201, 2111, 0020, 1102, 0210, 2110, 1020
+count_sets() failed for hand 0000, 0001, 0002, 0010, 0011, 0012, 0020, 0021, 0100, 0101, 0200, 0201
+Score += 8
+
+Coverage (20 points):
+Score += 0
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 28/50 = 56.0%
+
+-------------------------------------------------------------------------------
+
+10/03/23 13:25
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 4 (10 points):
+Score += 10
+
+Problem 6 (10 points):
+count_sets() failed for hand 1022, 1122, 0100, 2021, 0010, 2201, 2111, 0020, 1102, 0210, 2110, 1020
+count_sets() failed for hand 0000, 0001, 0002, 0010, 0011, 0012, 0020, 0021, 0100, 0101, 0200, 0201
+Score += 8
+
+Coverage (20 points):
+Score += 20
+
+Code Quality (5 points):
+Please comment code!
+Score += 4
+
+Total score: 47/50 = 94.0%
+
+Great job!
+
+-------------------------------------------------------------------------------
+
