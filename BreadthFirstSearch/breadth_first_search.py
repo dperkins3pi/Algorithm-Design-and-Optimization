@@ -1,8 +1,8 @@
 # breadth_first_search.py
 """Volume 2: Breadth-First Search.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 321
+10/5/23
 """
 
 
@@ -31,7 +31,14 @@ class Graph:
         Parameters:
             n: the label for the new node.
         """
-        raise NotImplementedError("Problem 1 Incomplete")
+        # if the key is not in there
+        if n not in self.d.keys():
+            # Create a dictionary with the node and its value as the empty set
+            node = {n: set()}
+            self.d.update(node)
+
+
+
 
     # Problem 1
     def add_edge(self, u, v):
@@ -42,7 +49,13 @@ class Graph:
             u: a node label.
             v: a node label.
         """
-        raise NotImplementedError("Problem 1 Incomplete")
+        # add the nodes if they are not present
+        self.add_node(u)
+        self.add_node(v)
+
+        #add the nodes to the adjacency dictionary of each element
+        self.d[u].update({v})
+        self.d[v].update({u})
 
     # Problem 1
     def remove_node(self, n):
@@ -54,7 +67,15 @@ class Graph:
         Raises:
             KeyError: if n is not in the graph.
         """
-        raise NotImplementedError("Problem 1 Incomplete")
+        # Raise error if not in graph
+        if n not in self.d.keys():
+            raise KeyError(f"Node {n} is not in the graph")
+        else:
+            edges = self.d[n]   #edges to remove
+            self.d.pop(n)   #remove the value
+            # remove the edges adjacent to the node
+            for edge in edges:
+                self.d[edge].discard(n)
 
     # Problem 1
     def remove_edge(self, u, v):
@@ -68,7 +89,19 @@ class Graph:
             KeyError: if u or v are not in the graph, or if there is no
                 edge between u and v.
         """
-        raise NotImplementedError("Problem 1 Incomplete")
+        # Raise error if no edge in the graph
+        try: 
+            if u not in self.d[v]:
+                raise KeyError(f"the edge {u}=>{v} is not in the graph")
+            if v not in self.d[u]:
+                raise KeyError(f"the edge {u}<={v} is not in the graph")
+        except:
+            raise KeyError(f"the edge {u}<=>{v} is not in the graph")
+        
+        # Remove the edge from each adjacency dictionary
+        self.d[u].remove(v)
+        self.d[v].remove(u)
+
 
     # Problem 2
     def traverse(self, source):
@@ -151,3 +184,18 @@ class MovieGraph:
             (float): the average path length from actor to target.
         """
         raise NotImplementedError("Problem 6 Incomplete")
+
+if __name__ == "__main__":
+    # prob 1
+    my_Graph = Graph()
+    print(my_Graph)
+    my_Graph.add_edge(1,8)
+    my_Graph.add_edge(6,8)
+    my_Graph.add_edge(1,3)
+    my_Graph.add_edge(8,3)
+    my_Graph.add_edge(1,9)
+    print(my_Graph)
+    my_Graph.remove_node(1)
+    print(my_Graph)
+    my_Graph.remove_edge(3, 8)
+    print(my_Graph)
