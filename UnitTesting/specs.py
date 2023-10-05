@@ -11,11 +11,11 @@ import itertools
 import random
 
 def add(a, b):
-    """Add two numbers."""
+    #Add two numbers.
     return a + b
 
 def divide(a, b):
-    """Divide two numbers, raising an error if the second number is zero."""
+    #Divide two numbers, raising an error if the second number is zero.
     if b == 0:
         raise ZeroDivisionError("second input cannot be zero")
     return a / b
@@ -32,7 +32,7 @@ def smallest_factor(n):
 
 # Problem 2
 def month_length(month, leap_year=False):
-    """Return the number of days in the given month."""
+    #Return the number of days in the given month
     if month in {"September", "April", "June", "November"}:
         return 30
     elif month in {"January", "March", "May", "July",
@@ -49,7 +49,7 @@ def month_length(month, leap_year=False):
 
 # Problem 3
 def operate(a, b, oper):
-    """Apply an arithmetic operation to a and b."""
+    #Apply an arithmetic operation to a and b.
     if type(oper) is not str:
         raise TypeError("oper must be a string")
     elif oper == '+':
@@ -178,7 +178,7 @@ def is_set(a, b, c):
             and c are either the same or all different for i=1,2,3,4.
         False if a, b, and c do not form a set.
     """
-    for i in range(4):
+    for i in range(4):  # Detmine if the cards make a set
         if int(a[i]) + int(b[i]) + int(c[i]) not in [0, 3, 6]:
             return False
     return True
