@@ -199,7 +199,7 @@ class KNeighborsClassifier:
 
     def fit(self, X, y):
         self.tree = KDTree(X)  # make a tree from the data to improve nearest search efficiency
-        self.y = y
+        self.y = np.array(y)
 
     def predict(self, z):
         """
@@ -208,8 +208,8 @@ class KNeighborsClassifier:
         """
         # find list of the smallest n_neighbors Euclidean distances
         distances, indices = self.tree.query(z, k=self.n_neighbors)
-        y = [self.y[index] for index in indices]   #convert indices to the elements in the labels
-        return stats.mode(y)[0]   #return the most common label
+        #y = [self.y[index] for index in indices]   #convert indices to the elements in the labels
+        return stats.mode(self.y[indices])[0][0]  #return the most common label
 
 
 
@@ -236,10 +236,27 @@ def prob6(n_neighbors, filename="mnist_subset.npz"):
     X_test = data["X_test"].astype(np.float64)
     y_test = data["y_test"]
     
-    KNeighbor = KNeighborsClassifier(n_neighbors)
+    # Predict the numbers
+    KNeighbor = KNeighborsClassifier(n_neighbors=n_neighbors)
     KNeighbor.fit(X_train, y_train)
-    print("prediction", KNeighbor.predict(X_test))
-    print("y-test", y_test)
+    prediction = np.zeros(np.shape(X_test)[0])
+    i = 0
+    for row in X_test:
+        prediction[i] = KNeighbor.predict(row)   # predict each row
+        i += 1   # to find the index
+
+    # for testing
+    # print("prediction", prediction, "shape", np.shape(prediction))
+    # print("y-test", y_test, "shape", np.shape(y_test))
+
+    #calculate the accuracy
+    num_incorrect = 0
+    for i in range(len(prediction)):
+        if prediction[i] != y_test[i]:
+            num_incorrect += 1
+    accuracy = 1 - (num_incorrect / len(prediction))
+
+    return accuracy
 
 
 if __name__ == "__main__":
@@ -264,12 +281,13 @@ if __name__ == "__main__":
     # KNeighbor.fit(np.array([[-981, 1], [27, 2], [4, 4], [4, 6]]), np.array([11, 42, 553, 5533]))
     # print(KNeighbor.predict(np.array([4, 5])))
 
+    # prob5
     # data = np.random.random((100,5))
     # target = np.random.random(5)
     # tree = KNeighborsClassifier(3)
-    # tree.fit(data, target)
-    # .fit(np.array([[-981, 1], [27, 2], [4, 4], [4, 6]]), np.array([11, 42, 553, 5533]))
-    # print(KNeighbor.predict(np.array([0, 0])))
+    # tree.fit(np.array([[-981, 1], [27, 2], [4, 4], [4, 6]]), np.array([11, 42, 553, 5533]))
+    # print(tree.predict(np.array([0, 0])))
 
-    prob6(4)
+    # print(prob6(4))
+    print()
     
