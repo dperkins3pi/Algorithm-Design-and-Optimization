@@ -5,6 +5,9 @@ MATH 321
 10/5/23
 """
 
+import collections
+import networkx as nx
+from matplotlib import pyplot as plt
 
 # Problems 1-3
 class Graph:
@@ -118,7 +121,27 @@ class Graph:
         Raises:
             KeyError: if the source node is not in the graph.
         """
-        raise NotImplementedError("Problem 2 Incomplete")
+        # initailize the data structures
+        V = []
+        Q = collections.deque()  # Create Q as a deck
+        M = set()
+        Q.append(source)
+        M.add(source)
+
+        if source not in self.d.keys():
+            raise KeyError("The source node is not in the graph")
+
+        # until every node is traversed
+        while len(Q) > 0:  #until Q is empty
+            current_node = Q.popleft()  # Pop the element that was added first
+            V.append(current_node)
+            neighbors = self.d[current_node]  # Set of elements that current node points to
+            for neighbor in neighbors:
+                if neighbor not in M:
+                    Q.append(neighbor)
+                    M.add(neighbor)
+        return V
+        
 
     # Problem 3
     def shortest_path(self, source, target):
@@ -137,7 +160,39 @@ class Graph:
         Raises:
             KeyError: if the source or target nodes are not in the graph.
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        # initailize the data structures
+        Q = collections.deque()  # Create Q as a deck
+        M = set()
+        Q.append(source)
+        M.add(source)
+        back_traverse = {}   # To backtrack and find the path used to get the target
+        target_found = False
+
+        if source not in self.d.keys():
+            raise KeyError("The source node is not in the graph")
+
+        # To create the back_traverse from target to source
+        while not target_found:  #until target is found
+            current_node = Q.popleft()  # Pop the source element
+            neighbors = self.d[current_node]  # Set of elements that current node points to
+            for neighbor in neighbors:
+                if neighbor not in M:
+                    Q.append(neighbor)
+                    M.add(neighbor)
+                    back_traverse[neighbor] = current_node  # map the visited node to visiting
+                if neighbor == target:
+                    target_found = True
+            if len(Q) == 0:             # Backup if statement if not found
+                raise KeyError("The source node is not in the graph")
+        
+        # Traverse through back_traverse to find list of nodes visited in the parth
+        current_node = target
+        path = [current_node]
+        while current_node != source:  # Until source is found
+            current_node = back_traverse[current_node]
+            path.append(current_node)
+        path.reverse()   # Reverse order of list, so that it starts at the source
+        return path
 
 
 # Problems 4-6
@@ -161,7 +216,28 @@ class MovieGraph:
         Any '/' characters in movie titles have been replaced with the
         vertical pipe character | (for example, Frost|Nixon (2008)).
         """
-        raise NotImplementedError("Problem 4 Incomplete")
+        # Initialize attributes
+        self.movie_titles = set()
+        self.actor_names = set()
+        self.graph = nx.Graph()
+
+        # Read the file
+        with open(filename, "r") as file:
+            data = file.read()
+            data = data.splitlines()
+            data = [line.split("/") for line in data]   # Split the strings in the list
+
+        # Upload the data into the class atributes
+        self.movie_titles.update(set([item[0] for item in data]))
+        actors = [item[1:] for item in data]
+        
+        i = 0  # used to increment access each movie by index
+        for movie in actors:
+            self.actor_names.update(set(movie)) # Add the actors to the set by each movie
+            for actor in movie:
+                self.graph.add_edge(data[i][0], actor)  # Add the edge in the graph of each actor
+            i += 1
+
 
     # Problem 5
     def path_to_actor(self, source, target):
@@ -172,7 +248,11 @@ class MovieGraph:
             (list): a shortest path from source to target, including endpoints and movies.
             (int): the number of steps from source to target, excluding movies.
         """
-        raise NotImplementedError("Problem 5 Incomplete")
+        # Find shortest path and divide by two to ignore the movies in the path
+        path = nx.shortest_path(self.graph, source, target)
+        # To find length, subtract 1 from list and divide by two to ignore movies
+        length = int((len(path) - 1) / 2)
+        return path, length
 
     # Problem 6
     def average_number(self, target):
@@ -183,19 +263,60 @@ class MovieGraph:
         Returns:
             (float): the average path length from actor to target.
         """
-        raise NotImplementedError("Problem 6 Incomplete")
+        # Find shortest path lengths
+        path_lengths = nx.shortest_path_length(self.graph, target)
+        # Divide each path length by two to ignore the movies in the paths
+        for key in path_lengths:
+            path_lengths[key] = path_lengths[key] / 2
+        print(path_lengths)
+
+        plt.hist(path_lengths, bins=[i-.5 for i in range(8)])
+        plt.show()
 
 if __name__ == "__main__":
     # prob 1
-    my_Graph = Graph()
-    print(my_Graph)
-    my_Graph.add_edge(1,8)
-    my_Graph.add_edge(6,8)
-    my_Graph.add_edge(1,3)
-    my_Graph.add_edge(8,3)
-    my_Graph.add_edge(1,9)
-    print(my_Graph)
-    my_Graph.remove_node(1)
-    print(my_Graph)
-    my_Graph.remove_edge(3, 8)
-    print(my_Graph)
+    # my_Graph = Graph()
+    # print(my_Graph)
+    # my_Graph.add_edge(1,8)
+    # my_Graph.add_edge(6,8)
+    # my_Graph.add_edge(1,3)
+    # my_Graph.add_edge(8,3)
+    # my_Graph.add_edge(1,9)
+    # print(my_Graph)
+    # my_Graph.remove_node(1)
+    # print(my_Graph)
+    # my_Graph.remove_edge(3, 8)
+    # print(my_Graph)
+
+    #prob 2
+    # my_Graph = Graph()
+    # my_Graph.add_edge("A","B")
+    # my_Graph.add_edge("A","D")
+    # my_Graph.add_edge("B","D")
+    # my_Graph.add_edge("C","D")
+    # print(my_Graph)
+    # print("Traversal: ", my_Graph.traverse("A"))   
+    # # Ask TA: Order not always the same 
+    # #(not always possible since no path from B to C)
+
+    # #prob 3
+    # print("Shortest path: ", my_Graph.shortest_path("A", "C"))   
+
+    # prob 4
+    # my_Graph = MovieGraph()
+    # print(len(my_Graph.movie_titles))
+    # print(len(my_Graph.actor_names))
+    # print(my_Graph.graph.edges("Toby Jones"))
+
+    # prob 5
+    # my_Graph = MovieGraph()
+    # print(my_Graph.path_to_actor("Kevin Bacon", "Jennifer Lawrence"))
+    # print(my_Graph.path_to_actor("Kevin Bacon", "Christopher Robin"))
+    # print(my_Graph.path_to_actor("Kevin Bacon", "Tim Robbins"))
+    # print(my_Graph.path_to_actor("Kevin Bacon", "Zach Grenier"))
+    # print(my_Graph.path_to_actor("Kevin Bacon", "Chris Pratt"))
+    # print(my_Graph.path_to_actor("Kevin Bacon", "Adam Sandler"))
+
+    # prov 6
+    my_Graph = MovieGraph("movie_data_small.txt")
+    my_Graph.average_number("Kevin Bacon")
