@@ -1,0 +1,50 @@
+10/09/23 21:17
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (5 points):
+Score += 5
+
+Problem 3 (5 points):
+Score += 5
+
+Problem 4 (7 points):
+Score += 7
+
+Problem 5 (8 points):
+Score += 8
+
+Problem 6 (10 points):
+UnboundLocalError while poplefting: local variable 'the_object' referenced before assignment
+	Previous deque:   [93]
+Score += 8
+
+Problem 7 (5 points):
+prob7() failed
+	Original file:
+obstinately
+dews
+breadwinners
+laden
+raring
+lovebirds
+facilitative
+benchmarks
+trendiness
+massacring
+	Correct response: '\nmassacring\ntrendiness\nbenchmarks\nfacilitative\nlovebirds\nraring\nladen\nbreadwinners\ndews\nobstinately'
+	Student response: '\nmassacring\n\ntrendiness\nbenchmarks\nfacilitative\nlovebirds\nraring\nladen\nbreadwinners\ndews\nobstinately'
+Score += 0
+
+Code Quality (5 points):
+NotImplementedError: Unit test test_problem3() not found
+
+Total score: 38/50 = 76.0%
+
+
+Comments:
+	0
+
+-------------------------------------------------------------------------------
+
