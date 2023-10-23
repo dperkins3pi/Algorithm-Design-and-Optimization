@@ -270,6 +270,7 @@ class MovieGraph:
             path_lengths[key] = path_lengths[key] / 2
         print(path_lengths)
 
+        # Plot the histogram
         plt.hist(path_lengths, bins=[i-.5 for i in range(8)])
         plt.title(f"The {target} number's of other actos")
         plt.xlabel(f"The {target} number")

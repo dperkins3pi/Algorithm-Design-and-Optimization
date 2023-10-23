@@ -1,8 +1,8 @@
 # markov_chains.py
 """Volume 2: Markov Chains.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 321
+10/22/23
 """
 
 import numpy as np
@@ -39,7 +39,23 @@ class MarkovChain:
                             to B [   .5      .2   ]
         and the label-to-index dictionary is {"A":0, "B":1}.
         """
-        raise NotImplementedError("Problem 1 Incomplete")
+        # Set attributes of tree
+        self.A = A
+        if states is None:
+            self.labels = np.array([n for n in range(len(A))])   # Default labels
+        else:
+            self.labels = np.array(states)
+        self.label_dict = dict()
+
+        # Set the dictionary up
+        i = 0           # for iteration
+        for column in A.T:
+            if abs(sum(column) - 1) > 0.0000001:     # Verify that the matrix is column stochastic
+                print(column, sum(column))
+                raise ValueError("The Matrix is not column stochastic")
+            self.label_dict[self.labels[i]] = i    # Set each label to map to column number
+            i += 1
+            
 
     # Problem 2
     def transition(self, state):
@@ -52,7 +68,10 @@ class MarkovChain:
         Returns:
             (str): the label of the state to transitioned to.
         """
-        raise NotImplementedError("Problem 2 Incomplete")
+        distribution = self.A.T[self.label_dict[state]]  # Get column of the state
+        draw = np.random.multinomial(1, distribution)   # Take a draw
+        return self.labels[np.argmax(draw)]     # Return the state it transitioned to
+
 
     # Problem 3
     def walk(self, start, N):
@@ -66,7 +85,12 @@ class MarkovChain:
         Returns:
             (list(str)): A list of N state labels, including start.
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        labels = [start]  # intialize list
+        state = start
+        for i in range(N - 1):   # transition n-1 times
+            state = self.transition(state)
+            labels.append(state)
+        return labels
 
     # Problem 3
     def path(self, start, stop):
@@ -80,7 +104,12 @@ class MarkovChain:
         Returns:
             (list(str)): A list of state labels from start to stop.
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        labels = [start]  # initialize list
+        state = start
+        while state != stop:   # until the state is stop
+            state = self.transition(state)
+            labels.append(state)   # add to list
+        return labels
 
     # Problem 4
     def steady_state(self, tol=1e-12, maxiter=40):
@@ -126,3 +155,19 @@ class SentenceGenerator(MarkovChain):
             The dark side of loss is a path as one with you.
         """
         raise NotImplementedError("Problem 6 Incomplete")
+
+if __name__=="__main__":
+    A = np.array([[0.5, 0.3, 0.1, 0], [0.3, 0.3, 0.3, 0.3], [0.2, 0.3, 0.4, 0.5], [0, 0.1, 0.2, 0.2]])
+    my_chain = MarkovChain(A, ["hot", "mild", "cold", "freezing"])
+
+    # Prob 1
+    # print(my_chain.A)
+    # print(my_chain.labels)
+    # print(my_chain.label_dict)
+
+    # Prob 2
+    # print(my_chain.transition("cold"))
+
+    # Prob 3
+    # print(my_chain.walk("mild", 5))
+    # print(my_chain.path("hot", "freezing"))
