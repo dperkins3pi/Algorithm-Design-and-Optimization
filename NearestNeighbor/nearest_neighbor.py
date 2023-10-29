@@ -26,7 +26,8 @@ def exhaustive_search(X, z):
     norms = []   #list of distances
     for point in X:
         norms.append(la.norm(point - z))   #add distance of each point
-    return X[np.argmin(norms)]   #returns the point with smallest distance
+    nearest_neighbor = X[np.argmin(norms)]
+    return X[np.argmin(norms)], la.norm(nearest_neighbor)   #returns the point with smallest distance and its distance
 
 
 
@@ -264,9 +265,8 @@ if __name__ == "__main__":
     # z = np.array([1, 1])
     # X = np.array([[2, 2],[0, 0]])
     # print(exhaustive_search(X, z))
-    # print(type(z) is )
     # my_node = KDTNode(np.array([2,4]))
-    # # print(my_node.value)
+    # print(my_node.value)
 
     # #problems 3-4
     # my_tree = KDT()
