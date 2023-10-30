@@ -1,10 +1,13 @@
 # shell2.py
 """Volume 3: Unix Shell 2.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 321
+11/2/23
 """
 
+import os
+from glob import glob
+import subprocess
 
 # Problem 3
 def grep(target_string, file_pattern):
@@ -21,7 +24,15 @@ def grep(target_string, file_pattern):
         matched_files (list): list of the filenames that matched the file
                pattern AND the target string.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    file_pattern = "**/" + file_pattern   # To allow for matching more than one directory
+    files = glob(file_pattern, recursive=True)   # Find all files that match the pattern
+    matches = []
+    for the_file in files:          # For each file that matched the pattern
+        with open(the_file, "r") as file: # Open the file Checks to see if the file contains the target string
+            data = file.read()
+            if target_string in data:      # If target string is in the file
+                matches.append(the_file)
+    return matches
 
 
 # Problem 4
@@ -30,3 +41,10 @@ def largest_files(n):
     subdirectories (from largest to smallest).
     """
     raise NotImplementedError("Problem 4 Incomplete")
+
+if __name__ == "__main__":
+    # Prob 3
+    # print(grep("format", "*.py"))
+
+    # Prob 4
+    print()
