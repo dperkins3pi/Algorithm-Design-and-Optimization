@@ -51,8 +51,6 @@ class MarkovChain:
         i = 0           # for iteration
         for column in A.T:
             if abs(sum(column) - 1) > 0.0000001:     # Verify that the matrix is column stochastic
-                print(i, column)
-                print(sum(column))
                 raise ValueError("The Matrix is not column stochastic")
             self.label_dict[self.labels[i]] = i    # Set each label to map to column number
             i += 1
