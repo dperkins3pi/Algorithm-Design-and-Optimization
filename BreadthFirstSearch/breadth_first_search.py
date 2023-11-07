@@ -268,10 +268,9 @@ class MovieGraph:
         # Divide each path length by two to ignore the movies in the paths
         for key in path_lengths:
             path_lengths[key] = path_lengths[key] / 2
-        print(path_lengths)
 
         # Plot the histogram
-        plt.hist(path_lengths, bins=[i-.5 for i in range(8)])
+        plt.hist(path_lengths.values(), bins=[i-.5 for i in range(8)])
         plt.title(f"The {target} number's of other actos")
         plt.xlabel(f"The {target} number")
         plt.ylabel("Number of Actors")
