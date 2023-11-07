@@ -1,0 +1,49 @@
+11/06/23 18:57
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (10 points):
+Score += 10
+
+Problem 3 (10 points):
+Score += 10
+
+Problem 5 (10 points):
+Score += 10
+
+Problem 6 (10 points):
+Traceback (most recent call last):
+  File "base_test_driver.py", line 711, in _npTest
+    result = np.allclose(correct, student, atol=atol, rtol=rtol)
+  File "<__array_function__ internals>", line 200, in allclose
+  File "numeric.py", line 2270, in allclose
+    res = all(isclose(a, b, rtol=rtol, atol=atol, equal_nan=equal_nan))
+  File "<__array_function__ internals>", line 200, in isclose
+  File "numeric.py", line 2378, in isclose
+    yfin = isfinite(y)
+TypeError: ufunc 'isfinite' not supported for the input types, and the inputs could not be safely coerced to any supported types according to the casting rule ''safe''
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "base_test_driver.py", line 436, in test_all
+    points = func(student_module)
+  File "base_test_driver.py", line 159, in wrapper
+    return func(*args, **kwargs)
+  File "test_driver.py", line 229, in problem6
+    points += 5*self._same(ans, num,
+  File "base_test_driver.py", line 684, in _same
+    return self._npTest(correct, student, message, compare)
+  File "base_test_driver.py", line 722, in _npTest
+    raise TypeError("Invalid return type '{}'".format(
+TypeError: Invalid return type 'NoneType'
+
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 40/50 = 80.0%
+
+-------------------------------------------------------------------------------
+
