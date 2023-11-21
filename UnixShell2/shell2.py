@@ -37,6 +37,37 @@ def grep(target_string, file_pattern):
 
 
 # Problem 4
+# def largest_files(n):
+#     """Return a list of the n largest files in the current directory or its
+#     subdirectories (from largest to smallest).
+#     """
+#     the_files = set()           # Set to store tuples of file size and file path
+#     list_of_files = []
+#     all_files = glob("**/*", recursive=True)   # find all files in the directory
+#     main = os.getcwd()   # current directory
+    
+#     for file in all_files:
+#         if os.path.isdir(file):   # If it is a directory, go into it
+#             os.chdir(file)
+#             file_info = subprocess.check_output(["ls", "-s"]).decode()   # Find  size of each file
+#             file_info = file_info.split("\n")[1:-1]  # Remove total part and empty string, and make it a list
+#             for info in file_info:
+#                 info = info.strip()   # Strip whitespace
+#                 info = info.split(" ")      # Separate file size from name of file 
+#                 if not os.path.isdir(info[1]):    # If not directory
+#                     the_files.add((int(info[0]), file + "/" + info[1]))   # and file size and path to set of files
+#             os.chdir(main)   # Go back to original directory
+    
+#     for _ in range(n):   # For the n largest files
+#         list_of_files.append(max(the_files)[1])   # Add largest file to list
+#         the_files.remove(max(the_files))    # Remove the largest file from the set
+
+#     smallest = min(the_files)[1]           # Find smallest file
+#     args = [f"cat {smallest} | wc -l > smallest.txt"]   # Write enumber of lines ot smallest file
+#     subprocess.Popen(args, shell=True)
+
+#     return list_of_files                # Return list of n largest files
+
 def largest_files(n):
     """Return a list of the n largest files in the current directory or its
     subdirectories (from largest to smallest).
@@ -44,33 +75,25 @@ def largest_files(n):
     the_files = set()           # Set to store tuples of file size and file path
     list_of_files = []
     all_files = glob("**/*", recursive=True)   # find all files in the directory
-    main = os.getcwd()   # current directory
-    
+
     for file in all_files:
-        if os.path.isdir(file):   # If it is a directory, go into it
-            os.chdir(file)
-            file_info = subprocess.check_output(["ls", "-s"]).decode()   # Find  size of each file
-            file_info = file_info.split("\n")[1:-1]  # Remove total part and empty string, and make it a list
-            for info in file_info:
-                info = info.strip()   # Strip whitespace
-                info = info.split(" ")      # Separate file size from name of file 
-                if not os.path.isdir(info[1]):    # If not directory
-                    the_files.add((int(info[0]), file + "/" + info[1]))   # and file size and path to set of files
-            os.chdir(main)   # Go back to original directory
-    
+        the_files.add((os.path.getsize(file), file))
+
+    # print(the_files)
     for _ in range(n):   # For the n largest files
         list_of_files.append(max(the_files)[1])   # Add largest file to list
         the_files.remove(max(the_files))    # Remove the largest file from the set
 
     smallest = min(the_files)[1]           # Find smallest file
-    args = [f"cat {smallest} | wc -l > smallest.txt"]   # Writ enumber of lines ot smallest file
+    args = [f"cat {smallest} | wc -l > smallest.txt"]   # Write enumber of lines ot smallest file
     subprocess.Popen(args, shell=True)
 
     return list_of_files                # Return list of n largest files
+
 
 if __name__ == "__main__":
     # Prob 3
     # print(grep("format", "*.py"))
 
     # Prob 4
-    print(largest_files(5))
+    print(largest_files(10))
