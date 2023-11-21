@@ -1,0 +1,32 @@
+11/20/23 17:40
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (5 points):
+Score += 5
+
+Problem 3 (10 points):
+Score += 10
+
+Problem 4 (10 points):
+Your response:
+['Photos/chalkboard.jpg', 'Files/Mar/docs/data.txt', 'Photos/IMG_2044.jpg', 'Photos/IMG_2679.jpg', 'Photos/IMG_1501.jpg', 'Photos/IMG_2182.jpg', 'Photos/img_1987.jpg', 'Photos/IMG_2464.jpg', 'Photos/IMG_1510.jpg', 'Photos/img_1842.jpg']
+was not correct for largest_files(10)
+Score += 6
+
+Problem 5 (5 points):
+Score += 5
+
+Problem 6 (10 points):
+Score += 10
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 46/50 = 92.0%
+
+Great job!
+
+-------------------------------------------------------------------------------
+
