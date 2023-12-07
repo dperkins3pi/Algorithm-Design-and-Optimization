@@ -4,12 +4,12 @@
 import regular_expressions
 import pytest
 
-def test_prob4():
-    """
-    Write at least one unit test for problem 4,
-    testing to make sure your function correctly finds valid Python identifiers.
-    """
-    raise NotImplementedError("No code written for problem 4 unit test!!")
+# def test_prob4():
+#     """
+#     Write at least one unit test for problem 4,
+#     testing to make sure your function correctly finds valid Python identifiers.
+#     """
+#     raise NotImplementedError("No code written for problem 4 unit test!!")
 
 def test_prob3():
     # Sets up the pattern

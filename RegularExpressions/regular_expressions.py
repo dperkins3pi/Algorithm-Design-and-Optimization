@@ -1,9 +1,11 @@
 # regular_expressions.py
 """Volume 3: Regular Expressions.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 322
+12/7/23
 """
+
+import re
 
 # Problem 1
 def prob1():
@@ -13,7 +15,7 @@ def prob1():
     Returns:
         (_sre.SRE_Pattern): a compiled regular expression pattern object.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    return re.compile("python")
 
 # Problem 2
 def prob2():
@@ -23,7 +25,7 @@ def prob2():
     Returns:
         (_sre.SRE_Pattern): a compiled regular expression pattern object.
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    return re.compile(r"\^\{@\}\(\?\)\[%\]\{\.\}\(\*\)\[_\]\{&\}\$")
 
 # Problem 3
 def prob3():
@@ -36,7 +38,7 @@ def prob3():
     Returns:
         (_sre.SRE_Pattern): a compiled regular expression pattern object.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    return re.compile(r"^(Book|Mattress|Grocery) (store|supplier)$")
 
 # Problem 4
 def prob4():
@@ -77,3 +79,26 @@ def prob6(filename="fake_contacts.txt"):
     """
 
     raise NotImplementedError("Problem 6 Incomplete")
+
+if __name__=="__main__":
+    # Prob 1
+    # print(bool(prob1().match("Ipython")))
+    # print(bool(prob1().search("Ipython")))
+
+    # Prob 2
+    # print(bool(prob2().search("^{@}(?)[%]{.}(*)[_]{&}$")))
+
+    # Prob 3
+    # good_strings = ["Book store", "Book supplier",
+    #                 "Mattress store", "Mattress supplier",
+    #                 "Grocery store", "Grocery supplier"]
+    # bad_strings = ["Booky store", "Book Book", "Book Grocery store",
+    #                "This is a Book store", "Grocery stores rock",
+    #                "Book storesupplier", " Book store", "Bookstore"]
+    # for x in good_strings:
+    #     print(bool(prob3().search(x)))
+    # for x in bad_strings:
+    #     print(bool(prob3().search(x)))
+
+    # Prob 4
+    print()
