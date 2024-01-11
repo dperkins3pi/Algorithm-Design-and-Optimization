@@ -118,7 +118,29 @@ class Barycentric:
             xint ((m,) ndarray): x values of new interpolating points.
             yint ((m,) ndarray): y values of new interpolating points.
         """
-        raise NotImplementedError("Problem 4 Incomplete")
+        # Extend points
+        xint = np.concatenate((self.x, xint))
+        yint = np.concatenate((self.y, yint))
+        
+        # self.__init__(xint, yint)
+        # Compute Barycentric weights
+        n = len(xint)   # Number of interpolating points
+        w = np.ones(n)     # Array for storing weights
+        C = (np.max(xint) - np.min(xint)) / 4   # Capacity
+
+        # Randomize order of product
+        shuffle = np.random.permutation(n-1)
+        for j in range(n):
+            temp = (xint[j] - np.delete(xint, j)) / C
+            temp = temp[shuffle]
+            w[j] /= np.product(temp)
+
+        # Store attributes
+        self.x = xint
+        self.y = yint
+        self.w = w
+        self.n = n
+        
 
 
 # Problem 5
@@ -187,22 +209,46 @@ if __name__=="__main__":
     # plt.show()
 
     # Prob 3
-    x = np.linspace(-1, 1, 200)
-    f = 1 / (1 + 25 * x**2)
-    # n=5
-    plt.subplot(1, 2, 1)
-    plt.plot(x, f, label="Original")
-    xs = np.linspace(-1, 1, 5, endpoint=True)
-    ys = 1 / (1 + 25 * xs**2)
-    Barycentric_array = Barycentric(xs, ys)
-    plt.plot(x, Barycentric_array(x), label="Interpolation")
-    plt.legend()
-    # n = 11
-    plt.subplot(1, 2, 2)
-    plt.plot(x, f, label="Original")
-    xs = np.linspace(-1, 1, 11, endpoint=True)
-    ys = 1 / (1 + 25 * xs**2)
-    Barycentric_array = Barycentric(xs, ys)
-    plt.plot(x, Barycentric_array(x), label="Interpolation")
-    plt.legend()
-    plt.show()
+    # x = np.linspace(-1, 1, 200)
+    # f = 1 / (1 + 25 * x**2)
+    # # n=5
+    # plt.subplot(1, 2, 1)
+    # plt.plot(x, f, label="Original")
+    # xs = np.linspace(-1, 1, 5, endpoint=True)
+    # ys = 1 / (1 + 25 * xs**2)
+    # Barycentric_array = Barycentric(xs, ys)
+    # plt.plot(x, Barycentric_array(x), label="Interpolation")
+    # plt.legend()
+    # # n = 11
+    # plt.subplot(1, 2, 2)
+    # plt.plot(x, f, label="Original")
+    # xs = np.linspace(-1, 1, 11, endpoint=True)
+    # ys = 1 / (1 + 25 * xs**2)
+    # Barycentric_array = Barycentric(xs, ys)
+    # plt.plot(x, Barycentric_array(x), label="Interpolation")
+    # plt.legend()
+    # plt.show()
+
+    # Prob 4
+    # x = np.linspace(-1, 1, 200)
+    # f = 1 / (1 + 25 * x**2)
+    # # n=5
+    # plt.subplot(1, 2, 1)
+    # plt.plot(x, f, label="Original")
+    # xs = np.linspace(-1, 1, 5, endpoint=True)
+    # ys = 1 / (1 + 25 * xs**2)
+    # Barycentric_array = Barycentric(xs, ys)
+    # plt.plot(x, Barycentric_array(x), label="Interpolation")
+    # plt.legend()
+    # # n = 11
+    # plt.subplot(1, 2, 2)
+    # plt.plot(x, f, label="Original")
+    # xs = np.array([-.9, -.6321, -.11, .7, 0.88])
+    # ys = 1 / (1 + 25 * xs**2)
+    # Barycentric_array.add_weights(xs, ys)
+    # plt.plot(x, Barycentric_array(x), label="Interpolation")
+    # plt.legend()
+    # plt.show()
+
+    # prob5
+    print()
