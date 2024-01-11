@@ -8,8 +8,9 @@ MATH 322
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.interpolate import BarycentricInterpolator
-from scipy.special import eval_chebyt
 from scipy import linalg as la
+from numpy.fft import fft
+from numpy.polynomial.chebyshev import poly2cheb
 
 # Problems 1 and 2
 def lagrange(xint, yint, points):
@@ -215,7 +216,22 @@ def chebyshev_coeffs(f, n):
     Returns:
         coeffs ((n+1,) ndarray): Chebyshev coefficients for the interpolating polynomial.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    # Compute Chebyshev extremal points
+    j = np.arange(0, 2*n)
+    cheb = np.cos(j * np.pi / n)
+
+    # Compute the yks
+    y = np.ones(2*n) * 2
+    y[0] = 1
+    y[n] = 1
+
+    # Find the aks
+    a = y * np.real(fft(f(cheb)))
+
+    # Scale it
+    a *= (1/(2*n))
+
+    return a[:n]   # Return only the first n
 
 
 # Problem 7
@@ -227,7 +243,34 @@ def prob7(n):
     Parameters:
         n (int): Number of interpolating points to use.
     """
-    raise NotImplementedError("Problem 7 Incomplete")
+    # Load data
+    data = np.load("airdata.npy")
+    m = len(data)
+
+    # Get interpolating points
+    fx = lambda a, b, n: .5*(a+b + (b-a) * np.cos(np.arange(n+1) * np.pi / n))
+    a, b = 0, 366 - 1/24
+
+    # Find interpolation
+    domain = np.linspace(0, b, m)
+    points = fx(a, b, n)
+    temp = np.abs(points - domain.reshape(8784, 1))
+    temp2 = np.argmin(temp, axis=0)
+    poly = Barycentric(domain[temp2], data[temp2])
+
+    # Plot
+    plt.subplot(121)
+    plt.title("Original Data")
+    plt.xlabel("time")
+    plt.ylabel("PM_2.5")
+    plt.plot(domain, data)
+    plt.subplot(122)
+    plt.title("Approximation")
+    plt.xlabel("time")
+    plt.ylabel("PM_2.5")
+    plt.plot(domain, poly(domain))
+    plt.tight_layout()
+    plt.show()
 
 
 if __name__=="__main__":
@@ -303,4 +346,10 @@ if __name__=="__main__":
     # prob5()
 
     # prob6
-    print()
+    # f = lambda x: -3 + 2*x**2 - x**3 + x**4
+    # pcoeffs = [-3, 0, 2, -1, 1]
+    # ccoeffs = poly2cheb(pcoeffs)
+    # print(np.allclose(ccoeffs, chebyshev_coeffs(f, 5)))
+
+    # prob7
+    prob7(50)
