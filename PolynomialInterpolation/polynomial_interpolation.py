@@ -7,6 +7,9 @@ MATH 322
 
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.interpolate import BarycentricInterpolator
+from scipy.special import eval_chebyt
+from scipy import linalg as la
 
 # Problems 1 and 2
 def lagrange(xint, yint, points):
@@ -122,7 +125,7 @@ class Barycentric:
         xint = np.concatenate((self.x, xint))
         yint = np.concatenate((self.y, yint))
         
-        # self.__init__(xint, yint)
+        # self.__init__(xint, yint)  # Coult just call original function
         # Compute Barycentric weights
         n = len(xint)   # Number of interpolating points
         w = np.ones(n)     # Array for storing weights
@@ -151,7 +154,53 @@ def prob5():
     extremal points. Plot the absolute error of the interpolation with each
     method on a log-log plot.
     """
-    raise NotImplementedError("Problem 5 Incomplete")
+    domain = np.linspace(-1,1,400, endpoint=True)
+    f = lambda x: 1/(1+25*x**2)  # Function to be interpolated
+
+    ks = np.arange(2, 9)
+    ns = 2**ks
+    errors_b = []
+    errors_c = []
+    for i in ks:  # for n=2^2, 2^3, ..., 2^8
+        n = 2**i
+        pts = np.linspace(-1, 1, n, endpoint=True)  # interpolate n equally spaced points
+        poly = BarycentricInterpolator(pts, f(pts))   # Use class to find interpolating polynomial
+
+        y = f(domain)
+        y_approx = poly(domain)
+        try:   # Sometimes it divides by 0, so we default those to large numbers
+            errors_b.append(la.norm(y - y_approx, ord=np.inf))
+        except: 
+            errors_b.append(10**10)
+
+        # Same thing but now with Chebyshev extremal points
+        j = np.arange(0, n+1)
+        cheb = np.cos(j * np.pi / n)
+        poly = BarycentricInterpolator(cheb, f(cheb))   # Use class to find interpolating polynomial
+        y_approx = poly(domain)
+        errors_c.append(la.norm(y - y_approx, ord=np.inf))
+    
+        # Plot the Barycentric polynomials
+        # plt.subplot(4,2, i-1)
+        # plt.plot(domain, f(domain), label="f")
+        # plt.plot(domain, poly(domain), label="Approximation")
+        # plt.title(f"n = 2^{i}")
+        # plt.legend(loc="upper center")
+    
+    # Log log plots of error
+    plt.subplot(121)
+    plt.title("Equally Spaced Points")
+    plt.ylabel("error")
+    plt.xlabel("n")
+    plt.loglog(ns, errors_b)
+    plt.subplot(122)
+    plt.title("Chebyshec Extremal Points")
+    plt.ylabel("error")
+    plt.xlabel("n")
+    plt.loglog(ns, errors_c)
+
+    plt.tight_layout()
+    plt.show()
 
 
 # Problem 6
@@ -251,4 +300,7 @@ if __name__=="__main__":
     # plt.show()
 
     # prob5
+    # prob5()
+
+    # prob6
     print()
