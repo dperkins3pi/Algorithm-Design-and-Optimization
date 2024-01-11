@@ -8,28 +8,6 @@ MATH 322
 import numpy as np
 from matplotlib import pyplot as plt
 
-
-# Coding problem from 9.2
-# def compute_weights(x):  # find wj for equation 9.6
-#     n = len(x)
-#     weights = np.ones_like(x)  # initilize all to 1
-#     for j in range(n):
-#         for k in range(n):
-#             if k != j:   
-#                 weights[j] *= (x[j] - x[k])  # apply formula
-#     return 1 / weights
-
-# def interpolation(x, y, point): # Evaluates the interpolating polynomial
-#     weights = compute_weights(x)
-#     if point in x: return y[np.where(x == point)]  # if already in y, take that value
-#     num = 0
-#     den = 0
-#     for j in range(len(weights)):  # Apply formula 9.8
-#         num += (y[j] * weights[j]) / (point - x[j])
-#         den += (weights[j]) / (point - x[j])
-#     return num / den
-
-
 # Problems 1 and 2
 def lagrange(xint, yint, points):
     """Find an interpolating polynomial of lowest degree through the points
@@ -73,9 +51,6 @@ def lagrange(xint, yint, points):
     return p
 
     
-
-
-
 # Problems 3 and 4
 class Barycentric:
     """Class for performing Barycentric Lagrange interpolation.
@@ -94,7 +69,23 @@ class Barycentric:
             xint ((n,) ndarray): x values of interpolating points.
             yint ((n,) ndarray): y values of interpolating points.
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        # Compute Barycentric weights
+        n = len(xint)   # Number of interpolating points
+        w = np.ones(n)     # Array for storing weights
+        C = (np.max(xint) - np.min(xint)) / 4   # Capacity
+
+        # Randomize order of product
+        shuffle = np.random.permutation(n-1)
+        for j in range(n):
+            temp = (xint[j] - np.delete(xint, j)) / C
+            temp = temp[shuffle]
+            w[j] /= np.product(temp)
+
+        # Store attributes
+        self.x = xint
+        self.y = yint
+        self.w = w
+        self.n = n
 
     def __call__(self, points):
         """Using the calcuated Barycentric weights, evaluate the interpolating polynomial
@@ -106,7 +97,17 @@ class Barycentric:
         Returns:
             ((m,) ndarray): Array of values where the polynomial has been computed.
         """
-        raise NotImplementedError("Problem 3 Incomplete")
+        computation = np.zeros_like(points)
+        i = 0  # for indexing
+        for point in points:
+            if point in self.x: 
+                computation[i] = self.y[np.where(self.x == point)] # if already in y
+            else:
+                num = (self.w * self.y) / (point - self.x) # numerator as array of all values
+                den = (self.w) / (point - self.x)  # denominator as array of all values
+                computation[i] = np.sum(num) / np.sum(den)  # evaluate the point
+            i += 1
+        return computation
 
     # Problem 4
     def add_weights(self, xint, yint):
@@ -167,21 +168,41 @@ if __name__=="__main__":
     # lagrange(x, y, points)
 
     # Prob 2
+    # x = np.linspace(-1, 1, 200)
+    # f = 1 / (1 + 25 * x**2)
+    # # n=5
+    # plt.subplot(1, 2, 1)
+    # plt.plot(x, f, label="Original")
+    # xs = np.linspace(-1, 1, 5, endpoint=True)
+    # ys = 1 / (1 + 25 * xs**2)
+    # plt.plot(x, lagrange(xs, ys, x), label="Interpolation")
+    # plt.legend()
+    # # n = 11
+    # plt.subplot(1, 2, 2)
+    # plt.plot(x, f, label="Original")
+    # xs = np.linspace(-1, 1, 11, endpoint=True)
+    # ys = 1 / (1 + 25 * xs**2)
+    # plt.plot(x, lagrange(xs, ys, x), label="Interpolation")
+    # plt.legend()
+    # plt.show()
+
+    # Prob 3
     x = np.linspace(-1, 1, 200)
     f = 1 / (1 + 25 * x**2)
-
     # n=5
     plt.subplot(1, 2, 1)
     plt.plot(x, f, label="Original")
     xs = np.linspace(-1, 1, 5, endpoint=True)
     ys = 1 / (1 + 25 * xs**2)
-    plt.plot(x, lagrange(xs, ys, x), label="Interpolation")
+    Barycentric_array = Barycentric(xs, ys)
+    plt.plot(x, Barycentric_array(x), label="Interpolation")
     plt.legend()
     # n = 11
     plt.subplot(1, 2, 2)
     plt.plot(x, f, label="Original")
     xs = np.linspace(-1, 1, 11, endpoint=True)
     ys = 1 / (1 + 25 * xs**2)
-    plt.plot(x, lagrange(xs, ys, x), label="Interpolation")
+    Barycentric_array = Barycentric(xs, ys)
+    plt.plot(x, Barycentric_array(x), label="Interpolation")
     plt.legend()
     plt.show()
