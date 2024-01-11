@@ -1,9 +1,33 @@
 # polynomial_interpolation.py
 """Volume 2: Polynomial Interpolation.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 322
+1/9/24
 """
+
+import numpy as np
+from matplotlib import pyplot as plt
+
+
+# Coding problem from 9.2
+# def compute_weights(x):  # find wj for equation 9.6
+#     n = len(x)
+#     weights = np.ones_like(x)  # initilize all to 1
+#     for j in range(n):
+#         for k in range(n):
+#             if k != j:   
+#                 weights[j] *= (x[j] - x[k])  # apply formula
+#     return 1 / weights
+
+# def interpolation(x, y, point): # Evaluates the interpolating polynomial
+#     weights = compute_weights(x)
+#     if point in x: return y[np.where(x == point)]  # if already in y, take that value
+#     num = 0
+#     den = 0
+#     for j in range(len(weights)):  # Apply formula 9.8
+#         num += (y[j] * weights[j]) / (point - x[j])
+#         den += (weights[j]) / (point - x[j])
+#     return num / den
 
 
 # Problems 1 and 2
@@ -20,7 +44,36 @@ def lagrange(xint, yint, points):
     Returns:
         ((m,) ndarray): The value of the polynomial at the specified points.
     """
-    raise NotImplementedError("Problems 1 and 2 Incomplete")
+    # print("x", xint)
+    # print("y", yint)
+    # print("points", points)
+
+    # Compute the denominator of each Lj
+    L_denom = np.zeros_like(xint).astype(float)  # Initialize array for denominators
+    for j in range(len(L_denom)):
+        denom = 1   # Start at one
+        for k in range(len(L_denom)):
+            if j != k:
+                denom *= (xint[j] - xint[k])   # apply equal 14.1
+        L_denom[j] = denom
+    # print("denom", L_denom)
+
+    # Evaluate Lj at all points in domain
+    L = np.ones((len(xint), len(points)))
+    for j in range(len(L_denom)):
+        solutions = np.ones_like(points)   # initialize at zero
+        for k in range(len(L_denom)):
+            if j != k: solutions *= (points - xint[k])  # apply  14.1
+        L[j] = solutions / L_denom[j]   # divide by denominator
+    # print(L)
+
+    # Evaluate interpolating polynomial at each point in domain
+    p = yint @ L
+
+    return p
+
+    
+
 
 
 # Problems 3 and 4
@@ -103,3 +156,32 @@ def prob7(n):
         n (int): Number of interpolating points to use.
     """
     raise NotImplementedError("Problem 7 Incomplete")
+
+
+if __name__=="__main__":
+    # Prob 1
+    # x = np.array([0, 1, 2, 3, 4])
+    # x = (x - 2) / 2
+    # y = 1 / (1 + 25 * x**2)
+    # points = np.linspace(-1, 1, 4)
+    # lagrange(x, y, points)
+
+    # Prob 2
+    x = np.linspace(-1, 1, 200)
+    f = 1 / (1 + 25 * x**2)
+
+    # n=5
+    plt.subplot(1, 2, 1)
+    plt.plot(x, f, label="Original")
+    xs = np.linspace(-1, 1, 5, endpoint=True)
+    ys = 1 / (1 + 25 * xs**2)
+    plt.plot(x, lagrange(xs, ys, x), label="Interpolation")
+    plt.legend()
+    # n = 11
+    plt.subplot(1, 2, 2)
+    plt.plot(x, f, label="Original")
+    xs = np.linspace(-1, 1, 11, endpoint=True)
+    ys = 1 / (1 + 25 * xs**2)
+    plt.plot(x, lagrange(xs, ys, x), label="Interpolation")
+    plt.legend()
+    plt.show()
