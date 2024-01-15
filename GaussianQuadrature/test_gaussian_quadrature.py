@@ -29,8 +29,31 @@ def test_point_weights():
     # Write unit tests for testing the point_weights function
     
     # Create objects of class
+      # Create objects of class
     gauss1 = gaussian_quadrature.GaussianQuadrature(5, 'legendre')
     gauss2 = gaussian_quadrature.GaussianQuadrature(7, 'legendre')
+
+    # See if x's matxh
+    x = np.zeros(5)
+    x[0] = -(1/3)*np.sqrt(5+2*np.sqrt(10/7))
+    x[1] = -(1/3)*np.sqrt(5-2*np.sqrt(10/7))
+    x[3] = (1/3)*np.sqrt(5-2*np.sqrt(10/7))
+    x[4] = (1/3)*np.sqrt(5+2*np.sqrt(10/7))
+
+    # See if x's match
+    w = np.zeros(5)
+    w[0] = (322 - 13*np.sqrt(70)) / 900
+    w[1] = (322 + 13*np.sqrt(70)) / 900
+    w[2] = (128) / 225
+    w[3] = (322 + 13*np.sqrt(70)) / 900
+    w[4] = (322 - 13*np.sqrt(70)) / 900
+
+    print(x)
+    xi, wi = gauss1.points_weights(5)
+    assert abs(np.sum(x - xi)) < 0.001
+    assert abs(np.sum(w - wi)) < 0.001
+
+    # Write unit tests for testing the point_weights function
 
     # See if the integral approximation is within certain bount
     p = lambda x: x**2
