@@ -6,6 +6,7 @@ MATH 323
 """
 
 import numpy as np
+from scipy.linalg import eig
 
 class GaussianQuadrature:
     """Class for integrating functions on arbitrary intervals using Gaussian
@@ -31,7 +32,7 @@ class GaussianQuadrature:
         
         # Store attributes
         self.n = n
-        self.polytype = polytype
+        self.ptype = polytype
 
         # Calculate inverse weight function
         if polytype == "legendre":
@@ -40,8 +41,12 @@ class GaussianQuadrature:
             w_inverse = lambda x: np.sqrt(1 - x**2)
 
         # Store inverse weight function
-        self.w_inverse = w_inverse
-        
+        self.w_inv = w_inverse
+
+        # Find the points and weights
+        points, weights = self.points_weights(n)
+        self.points = points
+        self.weights = weights
 
     # Problem 2
     def points_weights(self, n):
@@ -54,7 +59,32 @@ class GaussianQuadrature:
             points ((n,) ndarray): The sampling points for the quadrature.
             weights ((n,) ndarray): The weights corresponding to the points.
         """
-        raise NotImplementedError("Problem 2 Incomplete")
+        # Find each B_k
+        if self.ptype == "legendre":
+            B = np.array([k**2 / (4*k**2 - 1) for k in range(1, n)])
+        elif self.ptype == "chebyshev":
+            B = np.ones(n - 1) * (1/4)
+            B[0] = (1/2)
+
+        # Create Jacobi matrix matrix (note that each a_k=0)
+        J = np.zeros((n, n))
+        for k in range(1, n):
+            J[k - 1, k] = np.sqrt(B[k - 1])
+            J[k, k - 1] = np.sqrt(B[k - 1])
+        print(J)
+
+        # Find the eigenvalues and eigenvectors of J
+        eigenvalues, eigenvectors = eig(J)
+        x = eigenvalues
+
+        # Calculate the weights
+        if self.ptype == "legendre":
+            mu = 2
+        elif self.ptype == "chebyshev":
+            mu = np.pi
+        weights = mu * eigenvectors[0]**2
+
+        return x, weights
 
     # Problem 3
     def basic(self, f):
@@ -113,6 +143,11 @@ def prob5():
 
 if __name__ == "__main__":
     # prob 1
-    quad = GaussianQuadrature(10, "chebyshev")
-    w = quad.w_inverse
-    print(w(0.01))
+    quad = GaussianQuadrature(10, "legendre")
+    # w = quad.w_inverse
+    # print(w(0.01))
+
+    # prob 2
+    x, w = quad.points_weights(5)
+    print(x)
+    print(w)

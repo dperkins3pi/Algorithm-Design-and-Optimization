@@ -27,4 +27,28 @@ def test_init():
 
 def test_point_weights():
     # Write unit tests for testing the point_weights function
-    raise NotImplementedError()
+    
+    # Create objects of class
+    gauss1 = gaussian_quadrature.GaussianQuadrature(5, 'legendre')
+    gauss2 = gaussian_quadrature.GaussianQuadrature(7, 'legendre')
+
+    # See if the integral approximation is within certain bount
+    p = lambda x: x**2
+    integral = np.sum(p(gauss1.points)*gauss1.weights)
+    assert (abs(integral - (2/3)) < 0.01 )
+
+    integral = np.sum(p(gauss2.points)*gauss2.weights)
+    assert (abs(integral - (2/3)) < 0.01 )
+
+   
+    # Function 2
+    gauss1 = gaussian_quadrature.GaussianQuadrature(6, 'legendre')
+    gauss2 = gaussian_quadrature.GaussianQuadrature(4, 'legendre')
+
+    # See if the integral approximation is within certain bount
+    p = lambda x: np.sin(x)**2 / (x - 2)
+    integral = np.sum(p(gauss1.points)*gauss1.weights)
+    assert (abs(integral - (-0.320437)) < 0.01 )
+
+    integral = np.sum(p(gauss2.points)*gauss2.weights)
+    assert (abs(integral - (-0.320437)) < 0.01 )
