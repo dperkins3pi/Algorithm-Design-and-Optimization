@@ -1,10 +1,11 @@
 # quassian_quadrature.py
 """Volume 2: Gaussian Quadrature.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 323
+1/14/24
 """
 
+import numpy as np
 
 class GaussianQuadrature:
     """Class for integrating functions on arbitrary intervals using Gaussian
@@ -24,7 +25,23 @@ class GaussianQuadrature:
         Raises:
             ValueError: if polytype is not 'legendre' or 'chebyshev'.
         """
-        raise NotImplementedError("Problem 1 Incomplete")
+        # Raise value error if invalid polytype
+        if polytype != "legendre" and polytype != "chebyshev":
+            raise ValueError("Polytype must be Legendre or Chebyshev")
+        
+        # Store attributes
+        self.n = n
+        self.polytype = polytype
+
+        # Calculate inverse weight function
+        if polytype == "legendre":
+            w_inverse = lambda x: 1
+        elif polytype == "chebyshev":
+            w_inverse = lambda x: np.sqrt(1 - x**2)
+
+        # Store inverse weight function
+        self.w_inverse = w_inverse
+        
 
     # Problem 2
     def points_weights(self, n):
@@ -92,3 +109,10 @@ def prob5():
     scipy.integrate.quad() (which doesn’t depend on n).
     """
     raise NotImplementedError("Problem 5 Incomplete")
+
+
+if __name__ == "__main__":
+    # prob 1
+    quad = GaussianQuadrature(10, "chebyshev")
+    w = quad.w_inverse
+    print(w(0.01))

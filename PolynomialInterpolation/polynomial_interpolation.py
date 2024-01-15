@@ -352,4 +352,28 @@ if __name__=="__main__":
     # print(np.allclose(ccoeffs, chebyshev_coeffs(f, 5)))
 
     # prob7
-    prob7(50)
+    # prob7(50)
+
+    import time
+    T = np.random.randint(10,30,50)
+    start = time.time()
+    product = 1
+    for t in T:
+        product *= t
+    end = time.time()
+    print(end - start)
+
+    start = time.time()
+    np.product(T)
+    end = time.time()
+    print("y", end - start)
+
+    # start = time.time()
+    # np.mult(T)
+    # end = time.time()
+    # print(end - start)
+
+    start = time.time()
+    np.linalg.prod_array(T)
+    end = time.time()
+    print(end - start)
