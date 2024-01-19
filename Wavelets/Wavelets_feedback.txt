@@ -1,0 +1,28 @@
+01/19/24 12:23
+
+Problem 1 (5 points):
+Score += 5
+
+Problem 2 (5 points):
+Score += 5
+
+Problem 3, part I (5 points):
+Score += 5
+
+Problem 3, part II (5 points):
+Score += 5
+
+Problem 4 (10 points):
+Images should be recombined to produce a version of noisy_darkhair with no noise, using the thresholds of tau given
+Score += 4
+
+Problems 5-7 (15 points):
+Score += 15
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 44/50 = 88.0%
+
+-------------------------------------------------------------------------------
+
