@@ -40,7 +40,7 @@ def test_point_weights():
     x[3] = (1/3)*np.sqrt(5-2*np.sqrt(10/7))
     x[4] = (1/3)*np.sqrt(5+2*np.sqrt(10/7))
 
-    # See if x's match
+    # See if w's match
     w = np.zeros(5)
     w[0] = (322 - 13*np.sqrt(70)) / 900
     w[1] = (322 + 13*np.sqrt(70)) / 900
@@ -48,7 +48,6 @@ def test_point_weights():
     w[3] = (322 + 13*np.sqrt(70)) / 900
     w[4] = (322 - 13*np.sqrt(70)) / 900
 
-    print(x)
     xi, wi = gauss1.points_weights(5)
     assert abs(np.sum(x - xi)) < 0.001
     assert abs(np.sum(w - wi)) < 0.001

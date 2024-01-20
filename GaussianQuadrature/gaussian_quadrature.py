@@ -231,12 +231,12 @@ if __name__ == "__main__":
     # They get closer and closer as n increases!!!!!
 
     # prob 5
-    # prob5()
+    prob5()
 
     # prob 6
     # f = lambda x, y: np.sin(x) + np.cos(y)
     # print("nquad", nquad(f, [[-10,10], [-1,1]])[0])
     # print("approximation", quad1.integrate2d(f, -10, 10, -1, 1))
 
-    print()
+    # print()
 
