@@ -1,0 +1,29 @@
+01/22/24 18:27
+
+Problems 1-2 (5 points):
+Score += 5
+
+Problem 3 (10 points):
+Score += 10
+
+Problem 4 (5 points):
+Score += 5
+
+Problem 5 (10 points):
+Score += 10
+
+Problem 6 (5 points):
+ValueError: operands could not be broadcast together with shapes (3,) (2,) 
+
+Problem 7 (10 points):
+Plot one subplot above the other to make the left figure clearer
+same issue
+Score += 8
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 43/50 = 86.0%
+
+-------------------------------------------------------------------------------
+
