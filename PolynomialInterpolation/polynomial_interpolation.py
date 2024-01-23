@@ -231,7 +231,7 @@ def chebyshev_coeffs(f, n):
     # Scale it
     a *= (1/(2*n))
 
-    return a[:n]   # Return only the first n
+    return a[:n+1]   # Return only the first n
 
 
 # Problem 7
@@ -259,12 +259,12 @@ def prob7(n):
     poly = Barycentric(domain[temp2], data[temp2])
 
     # Plot
-    plt.subplot(121)
+    plt.subplot(211)
     plt.title("Original Data")
     plt.xlabel("time")
     plt.ylabel("PM_2.5")
     plt.plot(domain, data)
-    plt.subplot(122)
+    plt.subplot(212)
     plt.title("Approximation")
     plt.xlabel("time")
     plt.ylabel("PM_2.5")
@@ -346,34 +346,34 @@ if __name__=="__main__":
     # prob5()
 
     # prob6
-    # f = lambda x: -3 + 2*x**2 - x**3 + x**4
-    # pcoeffs = [-3, 0, 2, -1, 1]
-    # ccoeffs = poly2cheb(pcoeffs)
-    # print(np.allclose(ccoeffs, chebyshev_coeffs(f, 5)))
+    f = lambda x: -3 + 2*x**2 - x**3 + x**4
+    pcoeffs = [-3, 0, 2, -1, 1]
+    ccoeffs = poly2cheb(pcoeffs)
+    print(np.allclose(ccoeffs, chebyshev_coeffs(f, 5)))
 
     # prob7
     # prob7(50)
 
-    import time
-    T = np.random.randint(10,30,50)
-    start = time.time()
-    product = 1
-    for t in T:
-        product *= t
-    end = time.time()
-    print(end - start)
-
-    start = time.time()
-    np.product(T)
-    end = time.time()
-    print("y", end - start)
-
+    # import time
+    # T = np.random.randint(10,30,50)
     # start = time.time()
-    # np.mult(T)
+    # product = 1
+    # for t in T:
+    #     product *= t
     # end = time.time()
     # print(end - start)
 
-    start = time.time()
-    np.linalg.prod_array(T)
-    end = time.time()
-    print(end - start)
+    # start = time.time()
+    # np.product(T)
+    # end = time.time()
+    # print("y", end - start)
+
+    # # start = time.time()
+    # # np.mult(T)
+    # # end = time.time()
+    # # print(end - start)
+
+    # start = time.time()
+    # np.linalg.prod_array(T)
+    # end = time.time()
+    # print(end - start)
