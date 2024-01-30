@@ -1,10 +1,13 @@
 # gradient_methods.py
 """Volume 2: Gradient Descent Methods.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 323
+1/30/24
 """
 
+import numpy as np
+from scipy import optimize as opt
+from scipy import linalg as la
 
 # Problem 1
 def steepest_descent(f, Df, x0, tol=1e-5, maxiter=100):
@@ -24,7 +27,17 @@ def steepest_descent(f, Df, x0, tol=1e-5, maxiter=100):
         (bool): Whether or not the algorithm converged.
         (int): The number of iterations computed.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    x = x0
+    converged = False
+    for k in range(1, maxiter+1):
+        a_x = lambda a: f(x - a*Df(x).T)  # Define function of alpha
+        step_size = opt.minimize_scalar(a_x)  # Return minimizer
+        x = x - step_size.x * Df(x).T   # 18.2
+        if la.norm(Df(x), np.inf) < tol:  # Already close enough
+            converged = True
+            break 
+
+    return x, converged, k
 
 
 # Problem 2
@@ -115,3 +128,17 @@ def prob6(filename="challenger.npy", guess=np.array([20., -1.])):
                         Defaults to [20., -1.]
     """
     raise NotImplementedError("Problem 6 Incomplete")
+
+
+if __name__=="__main__":
+    # prob 1
+    # easy function
+    f = lambda x: x[0]**4 + x[1]**4 + x[2]**4
+    Df = lambda x: np.array([4*x[0]**4, 4*x[1]**3, 4*x[2]**3])
+    x0 = np.array([1, 1, 2])
+    print(steepest_descent(f, Df, x0, tol=1e-5, maxiter=100))
+    # Rosenbrock function
+    f = lambda x: (1 - x[0])**2 + 100*(x[1] - x[0]**2)**2
+    Df = lambda x: np.array([-2*(1-x[0])+100*2*(x[1]-x[0]**2)*-2*x[0], 100*2*(x[1]-x[0]**2)])
+    x0 = np.array([1, 8])
+    print(steepest_descent(f, Df, x0, tol=1e-5, maxiter=10000))

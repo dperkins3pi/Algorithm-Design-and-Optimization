@@ -349,7 +349,7 @@ if __name__=="__main__":
     f = lambda x: -3 + 2*x**2 - x**3 + x**4
     pcoeffs = [-3, 0, 2, -1, 1]
     ccoeffs = poly2cheb(pcoeffs)
-    print(np.allclose(ccoeffs, chebyshev_coeffs(f, 5)))
+    print(np.allclose(ccoeffs, chebyshev_coeffs(f, 4)))
 
     # prob7
     # prob7(50)
