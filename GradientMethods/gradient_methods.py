@@ -9,7 +9,7 @@ import numpy as np
 from scipy import optimize as opt
 from scipy import linalg as la
 from scipy import optimize as opt
-from autograd import grad
+# from autograd import grad
 
 # Problem 1
 def steepest_descent(f, Df, x0, tol=1e-5, maxiter=100):
@@ -95,12 +95,12 @@ def nonlinear_conjugate_gradient(f, df, x0, tol=1e-5, maxiter=100):
         (int): The number of iterations computed.
     """
     converged = False
-    r = -df(x0).T   # Direction of steepest descent
+    r = -df(x0).T  
     d = r
     a = 1e-10  #HOW DO I FIND A???????????????
     x = x0 + a*d
     k = 1   # To count the number of iterations
-    while(la.norm(r) >= tol and k < maxiter):  # Algorithm 1
+    while(la.norm(r) >= tol and k < maxiter):  # Algorithm 2
         rk = -Df(x).T
         b = np.dot(rk, rk) / np.dot(r, r)
         d = rk + b*d
@@ -119,7 +119,15 @@ def prob4(filename="linregression.txt",
     the data from the given file, the given initial guess, and the default
     tolerance. Return the solution to the corresponding Normal Equations.
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+    # Load in the data
+    data = np.loadtxt(filename)
+    b = np.copy(data[:, 0])
+    data[:, 0] = np.ones_like(b)
+    A = data
+
+    # Use problem 2 to solve A^TAx=A^Tb
+    solution = conjugate_gradient(A.T @ A, A.T @ b, x0)[0]
+    return solution
 
 
 # Problem 5
@@ -168,7 +176,7 @@ if __name__=="__main__":
     f = lambda x: x[0]**4 + x[1]**4 + x[2]**4
     Df = lambda x: np.array([4*x[0]**4, 4*x[1]**3, 4*x[2]**3])
     x0 = np.array([1, 1, 2])
-    print(steepest_descent(f, Df, x0, tol=1e-5, maxiter=100)[0])
+    # print(steepest_descent(f, Df, x0, tol=1e-5, maxiter=100)[0])
     # # Rosenbrock function
     # f = lambda x: (1 - x[0])**2 + 100*(x[1] - x[0]**2)**2
     # Df = lambda x: np.array([-2*(1-x[0])+100*2*(x[1]-x[0]**2)*-2*x[0], 100*2*(x[1]-x[0]**2)])
@@ -196,17 +204,21 @@ if __name__=="__main__":
 
 
     # Prob 3
-    f = lambda x: x[0]**4 + x[1]**4 + x[2]**4
-    Df = lambda x: np.array([4*x[0]**4, 4*x[1]**3, 4*x[2]**3])
-    x0 = np.array([1., 1., 2.])
-    solution = opt.fmin_cg(f, x0, Df)
-    print("Solution:", solution)
-
-    # solution = opt.fmin_cg(opt.rosen, np.array([10, 10]), fprime = opt.rosen_der)
+    # f = lambda x: x[0]**4 + x[1]**4 + x[2]**4
+    # Df = lambda x: np.array([4*x[0]**4, 4*x[1]**3, 4*x[2]**3])
+    # x0 = np.array([1., 1., 2.])
+    # solution = opt.fmin_cg(f, x0, Df)
     # print("Solution:", solution)
-    # # Rosenbrock function
-    # f = lambda x: (1 - x[0])**2 + 100*(x[1] - x[0]**2)**2
-    # Df = lambda x: np.array([-2*(1-x[0])+100*2*(x[1]-x[0]**2)*-2*x[0], 100*2*(x[1]-x[0]**2)])
-    # x0 = np.array([10, 10])
-    min = nonlinear_conjugate_gradient(f, Df, x0)[0]
-    print("Approximation", min)
+
+    # # solution = opt.fmin_cg(opt.rosen, np.array([10, 10]), fprime = opt.rosen_der)
+    # # print("Solution:", solution)
+    # # # Rosenbrock function
+    # # f = lambda x: (1 - x[0])**2 + 100*(x[1] - x[0]**2)**2
+    # # Df = lambda x: np.array([-2*(1-x[0])+100*2*(x[1]-x[0]**2)*-2*x[0], 100*2*(x[1]-x[0]**2)])
+    # # x0 = np.array([10, 10])
+    # min = nonlinear_conjugate_gradient(f, Df, x0)[0]
+    # print("Approximation", min)
+
+
+    # Prob 4
+    print(prob4())
