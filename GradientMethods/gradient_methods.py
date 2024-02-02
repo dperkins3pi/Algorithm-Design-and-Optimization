@@ -8,6 +8,8 @@ MATH 323
 import numpy as np
 from scipy import optimize as opt
 from scipy import linalg as la
+from scipy import optimize as opt
+from autograd import grad
 
 # Problem 1
 def steepest_descent(f, Df, x0, tol=1e-5, maxiter=100):
@@ -55,7 +57,22 @@ def conjugate_gradient(Q, b, x0, tol=1e-4):
         (bool): Whether or not the algorithm converged.
         (int): The number of iterations computed.
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    converged = False
+    n = len(Q)  # number of basis vectors
+    r = Q @ x0 - b   # Direction of steepest descent
+    d = -r
+    k = 0   # To count the number of iterations
+    x = x0
+    while(la.norm(r) >= tol and k < n):  # Algorithm 1
+        a = np.dot(r, r) / np.dot(d, Q @ d)  # Use dot product to find r^Tr
+        x = x + a * d
+        rk = r + a * (Q @ d)
+        b = np.dot(rk, rk) / np.dot(r, r)
+        d = -rk + b * d
+        r = rk   # Set new value for r
+        k = k + 1
+    if la.norm(r) < tol: converged = True
+    return x, converged, k
 
 
 # Problem 3
@@ -77,7 +94,22 @@ def nonlinear_conjugate_gradient(f, df, x0, tol=1e-5, maxiter=100):
         (bool): Whether or not the algorithm converged.
         (int): The number of iterations computed.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    converged = False
+    r = -df(x0).T   # Direction of steepest descent
+    d = r
+    a = 1e-10  #HOW DO I FIND A???????????????
+    x = x0 + a*d
+    k = 1   # To count the number of iterations
+    while(la.norm(r) >= tol and k < maxiter):  # Algorithm 1
+        rk = -Df(x).T
+        b = np.dot(rk, rk) / np.dot(r, r)
+        d = rk + b*d
+        a = 1e-10  #HOW DO I FIND A???????????????
+        x = x + a*d
+        r = rk
+        k = k + 1
+    if la.norm(r) < tol: converged = True
+    return x, converged, k
 
 
 # Problem 4
@@ -136,9 +168,45 @@ if __name__=="__main__":
     f = lambda x: x[0]**4 + x[1]**4 + x[2]**4
     Df = lambda x: np.array([4*x[0]**4, 4*x[1]**3, 4*x[2]**3])
     x0 = np.array([1, 1, 2])
-    print(steepest_descent(f, Df, x0, tol=1e-5, maxiter=100))
-    # Rosenbrock function
-    f = lambda x: (1 - x[0])**2 + 100*(x[1] - x[0]**2)**2
-    Df = lambda x: np.array([-2*(1-x[0])+100*2*(x[1]-x[0]**2)*-2*x[0], 100*2*(x[1]-x[0]**2)])
-    x0 = np.array([1, 8])
-    print(steepest_descent(f, Df, x0, tol=1e-5, maxiter=10000))
+    print(steepest_descent(f, Df, x0, tol=1e-5, maxiter=100)[0])
+    # # Rosenbrock function
+    # f = lambda x: (1 - x[0])**2 + 100*(x[1] - x[0]**2)**2
+    # Df = lambda x: np.array([-2*(1-x[0])+100*2*(x[1]-x[0]**2)*-2*x[0], 100*2*(x[1]-x[0]**2)])
+    # x0 = np.array([1, 8])
+    # print(steepest_descent(f, Df, x0, tol=1e-5, maxiter=10000))
+
+
+    # prob2
+    # Q = np.array([[2, 0], [0, 4]])
+    # b = np.array([1, 8])
+    # x0 = np.random.random(2)
+    # print(np.allclose(conjugate_gradient(Q, b, x0, tol=1e-4)[0], np.array([1/2, 2.])))
+
+    # for i in range(10):
+    #     n = 4
+    #     A = np.random.random((n, n))
+    #     Q = A.T @ A
+    #     b, x0 = np.random.random((2, n))
+    #     x = la.solve(Q, b)
+    #     x_approx, converged, k = conjugate_gradient(Q, b, x0, tol=1e-4)
+    #     if(converged):
+    #         print(np.allclose(Q @ x, b))
+    #     else:
+    #         print("The algorithm did not converge. Guess:" + x_approx, "actual: " + x)
+
+
+    # Prob 3
+    f = lambda x: x[0]**4 + x[1]**4 + x[2]**4
+    Df = lambda x: np.array([4*x[0]**4, 4*x[1]**3, 4*x[2]**3])
+    x0 = np.array([1., 1., 2.])
+    solution = opt.fmin_cg(f, x0, Df)
+    print("Solution:", solution)
+
+    # solution = opt.fmin_cg(opt.rosen, np.array([10, 10]), fprime = opt.rosen_der)
+    # print("Solution:", solution)
+    # # Rosenbrock function
+    # f = lambda x: (1 - x[0])**2 + 100*(x[1] - x[0]**2)**2
+    # Df = lambda x: np.array([-2*(1-x[0])+100*2*(x[1]-x[0]**2)*-2*x[0], 100*2*(x[1]-x[0]**2)])
+    # x0 = np.array([10, 10])
+    min = nonlinear_conjugate_gradient(f, Df, x0)[0]
+    print("Approximation", min)
