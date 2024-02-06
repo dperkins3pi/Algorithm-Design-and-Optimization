@@ -1,0 +1,31 @@
+02/05/24 19:53
+
+Problem 1 (10 points):
+Score += 10
+
+Problem 2 (10 points):
+Score += 10
+
+Problem 3 (15 points):
+Traceback (most recent call last):
+  File "base_test_driver.py", line 436, in test_all
+    points = func(student_module)
+  File "test_driver.py", line 106, in problem3
+    points += 2*self._test(0, df, s.secant1d, df, 3.14159265359, 3,
+  File "test_driver.py", line 56, in _test
+    stu, converged, niters = sfunc(*args, **kwargs)
+  File "oneD_optimization.py", line 99, in secant1d
+    x2 = (x0 * df(x1) - x1 * df(x0)) / (df(x1) - df(x0))  # Formula 16.3
+ZeroDivisionError: float division by zero
+
+
+Problem 4 (10 points):
+Score += 10
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 35/50 = 70.0%
+
+-------------------------------------------------------------------------------
+
