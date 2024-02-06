@@ -9,6 +9,7 @@ import numpy as np
 from scipy import optimize as opt
 from scipy import linalg as la
 from scipy import optimize as opt
+from matplotlib import pyplot as plt
 
 # Problem 1
 def steepest_descent(f, Df, x0, tol=1e-5, maxiter=100):
@@ -146,7 +147,14 @@ class LogisticRegression1D:
             y ((n,) ndarray): An array of n outcome variables.
             guess (array): Initial guess for beta.
         """
-        raise NotImplementedError("Problem 5 Incomplete")
+        def neg_log_like(B):
+            summand = np.log(1 + np.exp(-(B[0] + B[1]*x))) + (1 - y)*(B[0] + B[1]*x)  # (18.4)
+            return np.sum(summand)
+        minimizer = opt.fmin_cg(neg_log_like, guess)  # Minimize the function
+
+        # Store minimizers
+        self.B0 = minimizer[0]
+        self.B1 = minimizer[1]
 
     def predict(self, x):
         """Calculate the probability of an unlabeled predictor variable
@@ -155,7 +163,7 @@ class LogisticRegression1D:
         Parameters:
             x (float): a predictor variable with an unknown label.
         """
-        raise NotImplementedError("Problem 5 Incomplete")
+        return 1 / (1 + np.exp(-(self.B0 + self.B1*x)))   # probability that x is assigned label y=1
 
 
 # Problem 6
@@ -170,7 +178,31 @@ def prob6(filename="challenger.npy", guess=np.array([20., -1.])):
         guess (array): The initial guess for beta.
                         Defaults to [20., -1.]
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    # Get the data
+    data = np.load(filename)
+    x = data[:, 0]
+    y = data[:, 1]
+
+    guess = np.array([20, -1])  # initial guess
+
+    # Fit the data
+    log_reg = LogisticRegression1D()
+    log_reg.fit(x, y, guess)
+
+    # Get the graph
+    xs = np.linspace(30, 100, endpoint=True)
+    prediction = log_reg.predict(xs)
+    
+    # Plot it
+    plt.title("Probability of O-Ring Damage")
+    plt.ylabel('O-Ring Damage')
+    plt.xlabel("Temperature")
+    plt.plot(xs, prediction, c="orange")
+    plt.scatter(x, y)
+    plt.legend()
+    plt.show()
+
+    return log_reg.predict(31)  # predicted probability of damage
 
 
 if __name__=="__main__":
@@ -226,4 +258,8 @@ if __name__=="__main__":
     # PROBLEM 3 IS NOT WORKING!!!!!!! HOW DO I FIND ARGMIN
 
     # Prob 4
-    print(prob4())
+    # print(prob4())
+
+
+    # Prob 5 and 6
+    print(prob6())
