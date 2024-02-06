@@ -9,7 +9,6 @@ import numpy as np
 from scipy import optimize as opt
 from scipy import linalg as la
 from scipy import optimize as opt
-# from autograd import grad
 
 # Problem 1
 def steepest_descent(f, Df, x0, tol=1e-5, maxiter=100):
@@ -95,16 +94,20 @@ def nonlinear_conjugate_gradient(f, df, x0, tol=1e-5, maxiter=100):
         (int): The number of iterations computed.
     """
     converged = False
-    r = -df(x0).T  
+    r = -df(x0) 
     d = r
-    a = 1e-10  #HOW DO I FIND A???????????????
+    g = lambda a: f(x0 + a*d) 
+    a = opt.minimize_scalar(g).x
     x = x0 + a*d
     k = 1   # To count the number of iterations
     while(la.norm(r) >= tol and k < maxiter):  # Algorithm 2
-        rk = -Df(x).T
+        rk = -df(x)
         b = np.dot(rk, rk) / np.dot(r, r)
         d = rk + b*d
-        a = 1e-10  #HOW DO I FIND A???????????????
+
+        g = lambda a: f(x + a*d) 
+        a = opt.minimize_scalar(g).x
+
         x = x + a*d
         r = rk
         k = k + 1
@@ -207,18 +210,20 @@ if __name__=="__main__":
     # f = lambda x: x[0]**4 + x[1]**4 + x[2]**4
     # Df = lambda x: np.array([4*x[0]**4, 4*x[1]**3, 4*x[2]**3])
     # x0 = np.array([1., 1., 2.])
-    # solution = opt.fmin_cg(f, x0, Df)
+
+    # x0 = np.array([10, 10])
+    # solution = opt.fmin_cg(opt.rosen, x0, opt.rosen_der)
     # print("Solution:", solution)
+    # print()
 
-    # # solution = opt.fmin_cg(opt.rosen, np.array([10, 10]), fprime = opt.rosen_der)
-    # # print("Solution:", solution)
     # # # Rosenbrock function
-    # # f = lambda x: (1 - x[0])**2 + 100*(x[1] - x[0]**2)**2
-    # # Df = lambda x: np.array([-2*(1-x[0])+100*2*(x[1]-x[0]**2)*-2*x[0], 100*2*(x[1]-x[0]**2)])
-    # # x0 = np.array([10, 10])
-    # min = nonlinear_conjugate_gradient(f, Df, x0)[0]
+    # x0 = np.array([10, 10])
+    # min = nonlinear_conjugate_gradient(opt.rosen, opt.rosen_der, x0, maxiter=10000)
     # print("Approximation", min)
+    # print("opt solution evaluated:", f(solution), "my solution evaluated:", f(min[0]))
 
+
+    # PROBLEM 3 IS NOT WORKING!!!!!!! HOW DO I FIND ARGMIN
 
     # Prob 4
     print(prob4())

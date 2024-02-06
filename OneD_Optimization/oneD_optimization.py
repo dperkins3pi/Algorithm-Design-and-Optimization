@@ -73,7 +73,6 @@ def newton1d(df, d2f, x0, tol=1e-5, maxiter=100):
             converged = True
             break
         x0 = x1  # Update terms
-    
     return x1, converged, i
 
 
@@ -97,7 +96,7 @@ def secant1d(df, x0, x1, tol=1e-5, maxiter=100):
 
     for i in range(1, maxiter+1):
         x2 = (x0 * df(x1) - x1 * df(x0)) / (df(x1) - df(x0))  # Formula 16.3
-        if abs(x1 - x0) < tol:   # x is not changing enough
+        if np.abs(x2 - x1) < tol:   # x is not changing enough
             converged = True
             break
         # Update last terms
