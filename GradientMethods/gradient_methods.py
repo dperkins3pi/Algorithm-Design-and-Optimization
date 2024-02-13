@@ -254,12 +254,11 @@ if __name__=="__main__":
     # print("Approximation", min)
     # print("opt solution evaluated:", f(solution), "my solution evaluated:", f(min[0]))
 
-
-    # PROBLEM 3 IS NOT WORKING!!!!!!! HOW DO I FIND ARGMIN
-
     # Prob 4
     # print(prob4())
 
 
     # Prob 5 and 6
-    print(prob6())
+    # print(prob6())
+
+    pass

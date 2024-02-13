@@ -1,12 +1,11 @@
 """Volume 2: Simplex
 
-<Name>
-<Date>
-<Class>
+Daniel Perkins
+2/13/24
+MATH 323
 """
 
 import numpy as np
-
 
 # Problems 1-6
 class SimplexSolver(object):
@@ -29,7 +28,14 @@ class SimplexSolver(object):
         Raises:
             ValueError: if the given system is infeasible at the origin.
         """
-        return NotImplementedError("Problem 1 Incomplete")
+        x = np.zeros_like(c)
+        if(np.sum(A @ x <= b) != len(b)):   # If at least one of the components does not return true
+            raise ValueError("The given system is infeasible at the origin")
+        # Initialize the variables
+        self.c = c
+        self.A = A
+        self.b = b
+
 
     # Problem 2
     def _generatedictionary(self, c, A, b):
@@ -85,3 +91,16 @@ def prob6(filename='productMix.npz'):
         ((n,) ndarray): the number of units that should be produced for each product.
     """
     raise NotImplementedError("Problem 6 Incomplete")
+
+
+
+if __name__=="__main__":
+
+    # Prob 1
+    c = np.array([-3, -2])
+    A = np.array([[1, -1],
+                  [3, 1], 
+                  [4, 3], 
+                  [1, 1]])
+    b = np.array([2, 5, 7, 0])
+    solver = SimplexSolver(c, A, b)
