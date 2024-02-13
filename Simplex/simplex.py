@@ -60,14 +60,30 @@ class SimplexSolver(object):
     def _pivot_col(self):
         """Return the column index of the next pivot column.
         """
-        return NotImplementedError("Problem 3 Incomplete")
+        for col in range(1, len(self.dictionary[0])):  # for each column except the first
+            if(self.dictionary[0][col] < 0): return col  # Find first column with negative entry
+        return None   # if no column has negative entry, return none
 
     # Problem 3b
     def _pivot_row(self, index):
         """Determine the row index of the next pivot row using the ratio test
         (Bland's Rule).
         """
-        return NotImplementedError("Problem 3 Incomplete")
+        ratios = []   # list of all the entries
+        for row in range(1, len(self.dictionary)):   # for each row (excluding the first)
+            if self.dictionary[row, index] < 0:   # If the element is negative
+                if(self.dictionary[row, index] == 0): ratios.append(np.inf)  # avoid dividing by 0
+                else: ratios.append(-self.dictionary[row, 0] / self.dictionary[row, index])
+            else:
+                ratios.append(np.inf)    # If nonnegative, append infinity (so it is not chosen)
+        
+        if min(ratios) == np.inf: return None  # If there is no solution, return None
+        
+        # Find smallest ration (or first smallest if there are multiple)
+        row = np.argmin(ratios) + 1  # add 1 since we started at row index 1
+        return row
+        
+
 
     # Problem 4
     def pivot(self):
@@ -103,7 +119,6 @@ def prob6(filename='productMix.npz'):
 
 if __name__=="__main__":
 
-    # Prob 1
     c = np.array([-3, -2])
     A = np.array([[1, -1],
                   [3, 1], 
@@ -111,4 +126,10 @@ if __name__=="__main__":
     b = np.array([2, 5, 7])
     solver = SimplexSolver(c, A, b)
 
-    print(solver.dictionary)
+    # Prob 1 and 2
+    # print(solver.dictionary)
+
+    # Prob 3
+    col = solver._pivot_col()
+    print("pivot column:", col)
+    print("pivot row:", solver._pivot_row(col))
