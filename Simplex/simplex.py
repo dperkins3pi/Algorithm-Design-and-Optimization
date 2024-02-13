@@ -31,10 +31,8 @@ class SimplexSolver(object):
         x = np.zeros_like(c)
         if(np.sum(A @ x <= b) != len(b)):   # If at least one of the components does not return true
             raise ValueError("The given system is infeasible at the origin")
-        # Initialize the variables
-        self.c = c
-        self.A = A
-        self.b = b
+        # Initialize the dictionary
+        self.dictionary = self._generatedictionary(c, A, b)
 
 
     # Problem 2
@@ -46,7 +44,16 @@ class SimplexSolver(object):
             A ((m,n) ndarray): The constraint coefficients matrix.
             b ((m,) ndarray): The constraint vector.
         """
-        raise NotImplementedError("Problem 2 Incomplete")
+        # Get size of b
+        m = len(b)
+
+        # Set up the dictionary
+        I = np.eye(m)
+        A = -np.block([A, I])
+        c = np.hstack((c, np.zeros(m)))
+        top = np.r_[np.zeros(1), c]   # Combine 0 and c horizonatally
+        bottom = np.c_[b, A]        # Combine b and A horizontlaly
+        return np.block([[top], [bottom]])   # Concoatenate top and bottom
 
 
     # Problem 3a
@@ -100,7 +107,8 @@ if __name__=="__main__":
     c = np.array([-3, -2])
     A = np.array([[1, -1],
                   [3, 1], 
-                  [4, 3], 
-                  [1, 1]])
-    b = np.array([2, 5, 7, 0])
+                  [4, 3]])
+    b = np.array([2, 5, 7])
     solver = SimplexSolver(c, A, b)
+
+    print(solver.dictionary)
