@@ -90,7 +90,16 @@ class SimplexSolver(object):
         """Select the column and row to pivot on. Reduce the column to a
         negative elementary vector.
         """
-        return NotImplementedError("Problem 4 Incomplete")
+        col = self._pivot_col()
+        if col is None: raise ValueError("The problem is unbounded")  # Raise value error if all all columns are nonnegative
+        row = self._pivot_row(col)
+        if row is None: raise ValueError("The problem is unbounded")  # Raise value error if all all rows are nonnegative
+
+        # Make the pivot
+        self.dictionary[row] /= -self.dictionary[row, col]   # Divide pivot row by negative value of pivot column
+        for i in range(len(self.dictionary)):
+            if i == row: continue   # No more row operations performed on pivot row
+            self.dictionary[i] = self.dictionary[i] + self.dictionary[i, col] * self.dictionary[row]  # row operation to zero out
 
     # Problem 5
     def solve(self):
@@ -101,7 +110,27 @@ class SimplexSolver(object):
             (dict): The basic variables and their values.
             (dict): The nonbasic variables and their values.
         """
-        raise NotImplementedError("Problem 5 Incomplete")
+        # See if all values are nonnegative on top row (excluding the first entry)
+        if((np.sum(self.dictionary[0, 1:] >= 0)) == len(self.dictionary[0, 1:])): done = True
+        else: done = False
+        while not done:
+            self.pivot()  # make the pivot
+            # Check again
+            if((np.sum(self.dictionary[0, 1:] >= 0)) == len(self.dictionary[0, 1:])): done = True
+
+        minimal_val = self.dictionary[0,0]  # get min value
+
+        basic_var = dict()  # gets dependent variables
+        nonbasic_var = dict()   # gets independent variables
+        for i in range(1, len(self.dictionary[0])):
+            if(self.dictionary[0, i] != 0): nonbasic_var[i - 1] = 0  # independent variable
+            else: 
+                if(i + 1 < len(self.dictionary)):   # if index not out of bounds
+                    basic_var[i - 1] = self.dictionary[i + 1, 0]
+                else:   # index out of bounds, so loop back
+                    basic_var[i - 1] = self.dictionary[i - len(self.dictionary[0]), 0]
+
+        return minimal_val, basic_var, nonbasic_var
 
 # Problem 6
 def prob6(filename='productMix.npz'):
@@ -113,23 +142,70 @@ def prob6(filename='productMix.npz'):
     Returns:
         ((n,) ndarray): the number of units that should be produced for each product.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    # Load the data
+    data = np.load(filename)
+    A = data["A"]
+    p = data["p"]
+    m = data["m"]
+    d = data["d"]
+
+    # """Class for solving the standard linear optimization problem
+
+    #                     minimize        c^Tx
+    #                     subject to      Ax <= b
+    #                                      x >= 0
+    # via the Simplex algorithm.
+    # """
+    # # Problem 1
+    # def __init__(self, c, A, b):
+
+    print("A", A)
+    print("p", p)
+    print("m", m)
+    print("d", d)
+
+    b = np.concatenate((m, d))
+    new_A = np.block([[A], [np.eye(len(d))]])
+
+    print()
+    print()
+    print("New A")
+    print(new_A)
+    print("B", b)
+    print("C", -p)
+    # IS THIS THE WAY TO SET IT UP??????????????????????????/
+
+
+
+    # solver = SimplexSolver(-p, A, m)
+    # solver.solve()
 
 
 
 if __name__=="__main__":
 
-    c = np.array([-3, -2])
-    A = np.array([[1, -1],
-                  [3, 1], 
-                  [4, 3]])
-    b = np.array([2, 5, 7])
-    solver = SimplexSolver(c, A, b)
+    # c = np.array([-3, -2])
+    # A = np.array([[1, -1],
+    #               [3, 1], 
+    #               [4, 3]])
+    # b = np.array([2, 5, 7])
+    # solver = SimplexSolver(c, A, b)
 
     # Prob 1 and 2
     # print(solver.dictionary)
 
     # Prob 3
-    col = solver._pivot_col()
-    print("pivot column:", col)
-    print("pivot row:", solver._pivot_row(col))
+    # col = solver._pivot_col()
+    # print("pivot column:", col)
+    # print("pivot row:", solver._pivot_row(col))
+
+    # Prob 4
+    # print(solver.dictionary)
+    # solver.pivot()
+    # print(solver.dictionary)
+
+    # Prob 5
+    # print(solver.solve())
+
+    # Prob 6
+    prob6()
