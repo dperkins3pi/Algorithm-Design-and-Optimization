@@ -125,11 +125,8 @@ class SimplexSolver(object):
         for i in range(1, len(self.dictionary[0])):
             if(self.dictionary[0, i] != 0): nonbasic_var[i - 1] = 0  # independent variable
             else: 
-                if(i + 1 < len(self.dictionary)):   # if index not out of bounds
-                    basic_var[i - 1] = self.dictionary[i + 1, 0]
-                else:   # index out of bounds, so loop back
-                    basic_var[i - 1] = self.dictionary[i - len(self.dictionary[0]), 0]
-
+                row = self._pivot_row(i)     # Dependent variable
+                basic_var[i - 1] = self.dictionary[row, 0]
         return minimal_val, basic_var, nonbasic_var
 
 # Problem 6
@@ -149,36 +146,14 @@ def prob6(filename='productMix.npz'):
     m = data["m"]
     d = data["d"]
 
-    # """Class for solving the standard linear optimization problem
-
-    #                     minimize        c^Tx
-    #                     subject to      Ax <= b
-    #                                      x >= 0
-    # via the Simplex algorithm.
-    # """
-    # # Problem 1
-    # def __init__(self, c, A, b):
-
-    print("A", A)
-    print("p", p)
-    print("m", m)
-    print("d", d)
-
+    # Create matrix to represent the conditions
     b = np.concatenate((m, d))
     new_A = np.block([[A], [np.eye(len(d))]])
 
-    print()
-    print()
-    print("New A")
-    print(new_A)
-    print("B", b)
-    print("C", -p)
-    # IS THIS THE WAY TO SET IT UP??????????????????????????/
-
-
-
-    # solver = SimplexSolver(-p, A, m)
-    # solver.solve()
+    # Solve it
+    solver = SimplexSolver(-p, new_A, b)
+    sol = solver.solve()
+    return np.array(list(sol[1].values())[:len(d)])    # Return the values of the first few basic variables
 
 
 
@@ -208,4 +183,4 @@ if __name__=="__main__":
     # print(solver.solve())
 
     # Prob 6
-    prob6()
+    print(prob6())
