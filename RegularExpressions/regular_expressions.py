@@ -68,22 +68,25 @@ def prob5(code):
     Returns:
         (str): code, but with the colons inserted in the right places.
     """
+    pattern = "(\s*(if|elif|for|while|with|def|class)(.*)$|(else|try|except|finally)(.*)$|except)"
+    compiter = re.compile(pattern, re.MULTILINE)
+    return  compiter.sub(r"\1:", code)  # Convert list to string
 
-    lines = code.split("\n")  # Split up into lines which are easier to work with
-    new_lines = []   # For new lines that will be modified
-    for line in lines:   # For each line
-        pattern1 = r"\s*(if|elif|for|while|with|def|class)(.*)"   # Patterns with expressions at end
-        pattern2 = r"\s*(else|try|except|finally)"      # Patterns with no expression
-        block1 = re.compile(pattern1)   # Check if it is a block
-        block2 = re.compile(pattern2)   # Check if it is a block
-        if block1.search(line): 
-            new_line = block1.sub(line + ":", line)  # If block, add colon
-        if block2.search(line):
-            new_line = block2.sub(line + ":", line)
-        elif not block1.search(line):
-            new_line = line     # Id not, don't change anything
-        new_lines.append(new_line)
-    return "\n".join(new_lines)   # Convert list to string
+    # Old 
+    # lines = code.split("\n")  # Split up into lines which are easier to work with
+    # new_lines = []   # For new lines that will be modified
+    # for line in lines:   # For each line
+    #     pattern1 = r"\s*(if|elif|for|while|with|def|class)(.*)"   # Patterns with expressions at end
+    #     pattern2 = r"\s*(else|try|except|finally)"      # Patterns with no expression
+    #     block1 = re.compile(pattern1)   # Check if it is a block
+    #     block2 = re.compile(pattern2)   # Check if it is a block
+    #     if block1.search(line): 
+    #         new_line = block1.sub(line + ":", line)  # If block, add colon
+    #     if block2.search(line):
+    #         new_line = block2.sub(line + ":", line)
+    #     elif not block1.search(line):
+    #         new_line = line     # Id not, don't change anything
+    #     new_lines.append(new_line
 
 # Problem 6
 def prob6(filename="fake_contacts.txt"):
@@ -173,9 +176,9 @@ if __name__=="__main__":
     while k > i
         i *= 2
         p += 1
-        if k != 999
+        try
             print("k should not have changed")
-        else
+        except
             pass
     print(p)"""
     print(prob5(code))
