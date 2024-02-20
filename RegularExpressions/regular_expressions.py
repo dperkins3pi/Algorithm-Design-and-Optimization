@@ -105,14 +105,14 @@ def prob6(filename="fake_contacts.txt"):
     people = {}  # Dictionary of each person and their information
 
     # Set up regexp for each data information
-    name_pattern = re.compile(r"([a-zA-z]+ )([A-Z]\. )?([a-zA-z]+)")
+    name_pattern = re.compile(r"(^[a-zA-z]+ )([A-Z]\. )?([a-zA-z]+)")
     date_pattern = re.compile(r"([01]?)([0-9])/([0-3]?)([0-9])/(\d\d)?(\d\d)")
     email_pattern = re.compile(r"\S*@\S*")
     phone_pattern = re.compile(r"\d*-?\(?(\d\d\d)\)?-?(\d\d\d-\d\d\d\d)")
 
     for line in lines:
         names = name_pattern.findall(line)[0]  # Returns tuple that matched name
-        name = names[0] + names[2]   # Gets name in right format
+        name = names[0] + names[1] + names[2]   # Gets name in right format
         people[name] = {"birthday" : None, "email": None, "phone": None}
 
         dates = date_pattern.findall(line)
@@ -169,16 +169,16 @@ if __name__=="__main__":
     #     print(bool(prob4().search(x)), x)
 
     # prob 5
-    # code = """k, i, p = 999, 1, 0
-    # while k > i
-    #     i *= 2
-    #     p += 1
-    #     if k != 999
-    #         print("k should not have changed")
-    #     else
-    #         pass
-    # print(p)"""
-    # print(prob5(code))
+    code = """k, i, p = 999, 1, 0
+    while k > i
+        i *= 2
+        p += 1
+        if k != 999
+            print("k should not have changed")
+        else
+            pass
+    print(p)"""
+    print(prob5(code))
 
     # prob 6
     # print(prob6())
