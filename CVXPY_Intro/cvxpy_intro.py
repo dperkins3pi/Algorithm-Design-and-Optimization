@@ -165,7 +165,27 @@ def prob6():
         The optimizer x (ndarray)
         The optimal value (float)
     """	 
-    raise NotImplementedError("Problem 6 Incomplete")
+    data = np.load("food.npy", allow_pickle=True)   # Read the data
+    p = data[:,0]   # Prices
+    s = data[:,1]   # Servings
+    data[:, 5:] *= -1  # So that we minimize rather than maximizing
+    for i in range(2, 8):   # Multiple each thing by the serving size
+        data[:, i] *= s    
+    A = data[:, 2:].T # The rest of the matrix
+
+    n = len(data)   # Number of foods
+    x = cp.Variable(n, nonneg=True) # Declare x
+    objective = cp.Minimize(p.T @ x)  # Declare objective function for the price
+
+    # Constraints
+    b = np.array([2000, 65, 50, -1000, -25, -46])
+    constraints = [A @ x <= b]   # Use sum function as affine
+
+    # Assemble the problem and solve ir
+    problem = cp.Problem(objective, constraints)
+    optimal_val = problem.solve()
+    optimizer = x.value   # The most optimal things to eat are potatoes (the most), milk and cheese
+    return optimizer, optimal_val
 
 
 if __name__=="__main__":
@@ -188,8 +208,15 @@ if __name__=="__main__":
     # print(prob4())
 
     # Prob 5
-    A = np.array([[1, 2, 1, 1], [0, 3, -2, -1]])
-    b = np.array([7, 4])
-    optimizer, val = prob5(A, b)
-    print("Optimizer:", optimizer)
-    print("Optimal Value:", val)
+    # A = np.array([[1, 2, 1, 1], [0, 3, -2, -1]])
+    # b = np.array([7, 4])
+    # optimizer, val = prob5(A, b)
+    # print("Optimizer:", optimizer)
+    # print("Optimal Value:", val)
+
+    # Prob 6
+    # optimizer, val = prob6()
+    # print("Optimizer:", optimizer)
+    # print("Optimal Value:", val)
+
+    pass
