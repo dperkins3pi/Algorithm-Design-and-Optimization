@@ -57,7 +57,19 @@ def l1Min(A, b):
         The optimizer x (ndarray)
         The optimal value (float)
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    x = cp.Variable(4, nonneg=True) # Declare x
+    c = cp.norm(x, 1)
+    objective = cp.Minimize(c)  # Declare objective function
+
+    # Constraints
+    constraints = [A @ x == b]
+
+    # Assemle the problem and solve ir
+    problem = cp.Problem(objective, constraints)
+    optimal_val = problem.solve()
+    optimizer = x.value
+    return optimizer, optimal_val
+    
 
 
 # Problem 3
@@ -119,6 +131,13 @@ def prob6():
 
 if __name__=="__main__":
     # Prob 1
-    optimizer, val = prob1()
+    # optimizer, val = prob1()
+    # print("Optimizer:", optimizer)
+    # print("Optimal Value:", val)
+
+    # Prob 2
+    A = np.array([[1, 2, 1, 1], [0, 3, -2, -1]])
+    b = np.array([7, 4])
+    optimizer, val = l1Min(A, b)
     print("Optimizer:", optimizer)
     print("Optimal Value:", val)
