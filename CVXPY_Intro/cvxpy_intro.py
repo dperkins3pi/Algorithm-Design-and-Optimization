@@ -138,7 +138,19 @@ def prob5(A, b):
         The optimizer x (ndarray)
         The optimal value (float)
     """
-    raise NotImplementedError("Problem 5 Incomplete")
+    n = len(A[0])
+    x = cp.Variable(n, nonneg=True) # Declare x
+    c = cp.norm(A @ x - b, 2)
+    objective = cp.Minimize(c)  # Declare objective function
+
+    # Constraints
+    constraints = [cp.sum(x) == 1]   # Use sum function as affine
+
+    # Assemble the problem and solve ir
+    problem = cp.Problem(objective, constraints)
+    optimal_val = problem.solve()
+    optimizer = x.value
+    return optimizer, optimal_val
 
 
 # Problem 6
@@ -173,4 +185,11 @@ if __name__=="__main__":
     # print(prob3())
 
     # Prob 4
-    print(prob4())
+    # print(prob4())
+
+    # Prob 5
+    A = np.array([[1, 2, 1, 1], [0, 3, -2, -1]])
+    b = np.array([7, 4])
+    optimizer, val = prob5(A, b)
+    print("Optimizer:", optimizer)
+    print("Optimal Value:", val)
