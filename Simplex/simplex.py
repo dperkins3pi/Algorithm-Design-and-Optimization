@@ -183,4 +183,14 @@ if __name__=="__main__":
     # print(solver.solve())
 
     # Prob 6
-    print(prob6())
+    # print(prob6())
+
+    c = np.array([-4, -3])
+    A = np.array([[15, 10],
+                  [2, 2], 
+                  [1, 0]])
+    b = np.array([30, 5, 200])
+    solver = SimplexSolver(c, A, b)
+
+    print(solver.dictionary)
+    print(solver.solve())

@@ -1,9 +1,12 @@
 # cvxpy_intro.py
 """Volume 2: Intro to CVXPY.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 323
+2/27/24
 """
+
+import cvxpy as cp
+import numpy as np
 
 
 def prob1():
@@ -21,7 +24,22 @@ def prob1():
         The optimizer x (ndarray)
         The optimal value (float)
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    x = cp.Variable(3, nonneg=True) # Declare x
+    c = np.array([2, 1, 3])
+    objective = cp.Minimize(c.T @ x)  # Declare objective function
+
+    # Constraints
+    A1 = np.array([1, 2, 0])
+    A2 = np.array([0, 1, -4])
+    A3 = np.array([2, 10, 3])
+    P = np.eye(3)
+    constraints = [A1 @ x <= 3, A2 @ x <= 1, A3 @ x >= 12, P @ x >= 0]
+
+    # Assemle the problem and solve ir
+    problem = cp.Problem(objective, constraints)
+    optimal_val = problem.solve()
+    optimizer = x.value
+    return optimizer, optimal_val
 
 
 # Problem 2
@@ -97,3 +115,10 @@ def prob6():
         The optimal value (float)
     """	 
     raise NotImplementedError("Problem 6 Incomplete")
+
+
+if __name__=="__main__":
+    # Prob 1
+    optimizer, val = prob1()
+    print("Optimizer:", optimizer)
+    print("Optimal Value:", val)
