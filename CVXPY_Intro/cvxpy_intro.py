@@ -81,7 +81,26 @@ def prob3():
         The optimizer x (ndarray)
         The optimal value (float)
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+
+    p = cp.Variable(6, nonneg=True) # Declare x
+    c = np.array([4, 7, 6, 8, 8, 9])
+    objective = cp.Minimize(c.T @ p)  # Declare objective function
+
+    # Constraints
+    available = np.array([7, 2, 4])   # Number of pianos avaiable at each supply center
+    Aout = np.array([[1, 1, 0, 0, 0, 0],  # Represents the pianos leaving
+                  [0, 0, 1, 1, 0, 0],
+                  [0, 0, 0, 0, 1, 1]])
+    Ain = np.array([[1, 0, 1, 0, 1, 0],   # Represents the incoming pianos
+                    [0, 1, 0, 1, 0, 1]])
+    demand = np.array([5, 8])   # Number of pianos needed in each center
+    constraints = [Aout @ p == available, Ain @ p == demand]
+
+    # Assemble the problem and solve ir
+    problem = cp.Problem(objective, constraints)
+    optimal_val = problem.solve()
+    optimizer = p.value
+    return optimizer, optimal_val
 
 
 # Problem 4
@@ -136,8 +155,11 @@ if __name__=="__main__":
     # print("Optimal Value:", val)
 
     # Prob 2
-    A = np.array([[1, 2, 1, 1], [0, 3, -2, -1]])
-    b = np.array([7, 4])
-    optimizer, val = l1Min(A, b)
-    print("Optimizer:", optimizer)
-    print("Optimal Value:", val)
+    # A = np.array([[1, 2, 1, 1], [0, 3, -2, -1]])
+    # b = np.array([7, 4])
+    # optimizer, val = l1Min(A, b)
+    # print("Optimizer:", optimizer)
+    # print("Optimal Value:", val)
+
+    # Prob 3
+    print(prob3())
