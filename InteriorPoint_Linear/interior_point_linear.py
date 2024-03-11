@@ -1,8 +1,8 @@
 # interior_point_linear.py
 """Volume 2: Interior Point for Linear Programs.
-<Name>
-<Class>
-<Date>
+Danny Perkins
+MATH 322
+3/10/24
 """
 
 import numpy as np
@@ -80,9 +80,30 @@ def interiorPoint(A, b, c, niter=20, tol=1e-16, verbose=False):
         x ((n, ) ndarray): The optimal point.
         val (float): The minimum value of the objective function.
     """
-    raise NotImplementedError("Problems 1-4 Incomplete")
+    def F(x, l, mu):  # Equation for F
+        top = A.T @ l - c
+        middle = A @ x - b
+        bottom = mu * x   # Don't actually need to create M as a matrix
+        return np.concatenate((top, middle, bottom))
+
+    # l = np.array([1, 1, 1])
+    # mu = np.array([2, 2])
+    # x = np.array([-1, -1])
+    # print(F(x, l, mu))
 
 
 def leastAbsoluteDeviations(filename='simdata.txt'):
     """Generate and show the plot requested in the lab."""
     raise NotImplementedError("Problem 5 Incomplete")
+
+
+
+if __name__ == "__main__":
+    # Prob 1
+    c = np.array([-3, -2])
+    A = np.array([[1, -1],
+                  [3, 1],
+                  [4, 3]])
+    b = np.array([2, 5, 7])
+    interiorPoint(A, b, c)
+    
