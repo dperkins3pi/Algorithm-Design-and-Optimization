@@ -85,11 +85,48 @@ def interiorPoint(A, b, c, niter=20, tol=1e-16, verbose=False):
         middle = A @ x - b
         bottom = mu * x   # Don't actually need to create M as a matrix
         return np.concatenate((top, middle, bottom))
+    
+    def DF(x, l, mu):   # Equation for DF
+        top = np.block([np.zeros((len(A.T),len(A.T))), A.T, np.eye(len(A.T))])
+        middle = np.block([A, np.zeros((len(A),len(A))), np.zeros_like(A)])
+        bottom = np.block([np.diag(mu), np.zeros((len(A.T),len(A))), np.diag(x)])
+        return np.vstack((top, middle, bottom))
+    
+    def search_direction(x, l, mu):
+        sigma = 1/10
+        DF1 = DF(x, l, mu)   # Get the derivative
 
-    # l = np.array([1, 1, 1])
-    # mu = np.array([2, 2])
-    # x = np.array([-1, -1])
-    # print(F(x, l, mu))
+        F1 = F(x, l, mu)
+        v = np.dot(x, mu) / len(x)  # Duality measure
+        right = np.concatenate((np.zeros(len(x)), np.zeros(len(l)), sigma * v * np.ones(len(mu))))  # right side of 23.2
+        
+        # Solve the equations efficiently
+        lu, piv = la.lu_factor(DF1)
+        direction  = (la.lu_solve((lu, piv),  -F1 + right))
+        return direction, v
+    
+    def step_size(x, mu, direction): # compute step size
+        n = len(mu)
+        alpha_max = min(-mu / direction[-n:])  # delta mu is last n elements
+        delta_max = min(-x / direction[:n])  # delta x is first n elements
+        alpha = min(1, 0.95*alpha_max)
+        delta = min(1, 0.95*delta_max)
+        return alpha, delta
+    
+    x, lam, mu = starting_point(A, b, c)
+
+    for i in range(niter):  # run the algorithm
+        n = len(x)
+        direction, v = search_direction(x, lam, mu)  # get search direction and duality measure
+        alpha, delta = step_size(x, mu, direction)   # get step size
+        x = x + delta * direction[:n]   # compute next element in sequence
+        lam = lam + alpha * direction[n:-n]
+        mu = mu + alpha * direction[-n:]
+        print(v)
+        if v < tol: break   # already converged
+
+    return x, c.T @ x
+
 
 
 def leastAbsoluteDeviations(filename='simdata.txt'):
@@ -99,11 +136,12 @@ def leastAbsoluteDeviations(filename='simdata.txt'):
 
 
 if __name__ == "__main__":
-    # Prob 1
-    c = np.array([-3, -2])
-    A = np.array([[1, -1],
-                  [3, 1],
-                  [4, 3]])
-    b = np.array([2, 5, 7])
-    interiorPoint(A, b, c)
+    j, k = 7, 5
+    A, b, c, x = randomLP(j, k)
+    print("randomLP", x)
+    point, value = interiorPoint(A, b, -c)
+    print("my way", point[:k])
+    print("val", value)
     
+    # HELP!!!!! IS MY DF CORRECT???????
+    # IS IT NOT SUPPOSED TO BE INVERTIBLE
