@@ -1,0 +1,35 @@
+03/11/24 17:56
+
+P1: random_blackjack (5 points):
+Score += 5
+
+P2: blackjack (5 points):
+Score += 5
+
+P3A: cartpole render (5 points):
+Score += 5
+
+P3B: cartpole average steps (5 points):
+Score += 5
+
+P4A: car uphill render (5 points):
+Score += 5
+
+P4B: average number of moves (10 points):
+Score += 10
+
+P5AB: Initialize & render taxi v3 (5 points):
+Score += 5
+
+P5C: Average total reward (5 points):
+Score += 5
+
+Code quality (5 points):
+Score += 5
+
+Total score: 50/50 = 100.0%
+
+Excellent!
+
+-------------------------------------------------------------------------------
+
