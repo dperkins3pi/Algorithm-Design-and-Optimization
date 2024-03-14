@@ -81,34 +81,39 @@ def interiorPoint(A, b, c, niter=20, tol=1e-16, verbose=False):
         val (float): The minimum value of the objective function.
     """
     def F(x, l, mu):  # Equation for F
-        top = A.T @ l - c
+        top = A.T @ l + mu - c
         middle = A @ x - b
-        bottom = mu * x   # Don't actually need to create M as a matrix
-        return np.concatenate((top, middle, bottom))
+        bottom = np.diag(mu) @ x 
+        return np.hstack((top, middle, bottom))
     
     def DF(x, l, mu):   # Equation for DF
-        top = np.block([np.zeros((len(A.T),len(A.T))), A.T, np.eye(len(A.T))])
-        middle = np.block([A, np.zeros((len(A),len(A))), np.zeros_like(A)])
-        bottom = np.block([np.diag(mu), np.zeros((len(A.T),len(A))), np.diag(x)])
+        m, n = np.shape(A)
+        top = np.block([np.zeros((n,n)), A.T, np.eye(n)])
+        middle = np.block([A, np.zeros((m,m)), np.zeros((m,n))])
+        bottom = np.block([np.diag(mu), np.zeros((n,m)), np.diag(x)])
         return np.vstack((top, middle, bottom))
     
     def search_direction(x, l, mu):
         sigma = 1/10
+        n = len(x)
+        m = len(l)
         DF1 = DF(x, l, mu)   # Get the derivative
 
         F1 = F(x, l, mu)
         v = np.dot(x, mu) / len(x)  # Duality measure
-        right = np.concatenate((np.zeros(len(x)), np.zeros(len(l)), sigma * v * np.ones(len(mu))))  # right side of 23.2
+        right = -F1 + np.concatenate((np.zeros(n+m), sigma * v * np.ones(n)))  # right side of 23.2
         
         # Solve the equations efficiently
         lu, piv = la.lu_factor(DF1)
-        direction  = (la.lu_solve((lu, piv),  -F1 + right))
+        direction  = la.lu_solve((lu, piv), right)
         return direction, v
     
     def step_size(x, mu, direction): # compute step size
         n = len(mu)
-        alpha_max = min(-mu / direction[-n:])  # delta mu is last n elements
-        delta_max = min(-x / direction[:n])  # delta x is first n elements
+        try: alpha_max = min((-mu / direction[-n:])[direction[-n:] < 0])  # delta mu is last n elements
+        except: alpha_max = 2
+        try: delta_max = min((-x / direction[:n])[direction[:n] < 0])  # delta x is first n elements
+        except: delta_max = 2
         alpha = min(1, 0.95*alpha_max)
         delta = min(1, 0.95*delta_max)
         return alpha, delta
@@ -116,16 +121,15 @@ def interiorPoint(A, b, c, niter=20, tol=1e-16, verbose=False):
     x, lam, mu = starting_point(A, b, c)
 
     for i in range(niter):  # run the algorithm
-        n = len(x)
+        m, n = np.shape(A)
         direction, v = search_direction(x, lam, mu)  # get search direction and duality measure
         alpha, delta = step_size(x, mu, direction)   # get step size
         x = x + delta * direction[:n]   # compute next element in sequence
-        lam = lam + alpha * direction[n:-n]
+        lam = lam + alpha * direction[n:n+m]
         mu = mu + alpha * direction[-n:]
-        print(v)
         if v < tol: break   # already converged
 
-    return x, c.T @ x
+    return x, c @ x
 
 
 
@@ -136,12 +140,11 @@ def leastAbsoluteDeviations(filename='simdata.txt'):
 
 
 if __name__ == "__main__":
+    # Prob 1-4
     j, k = 7, 5
     A, b, c, x = randomLP(j, k)
-    print("randomLP", x)
-    point, value = interiorPoint(A, b, -c)
-    print("my way", point[:k])
-    print("val", value)
+    point, value = interiorPoint(A, b, c)
+    print(np.allclose(x, point[:k]))
     
     # HELP!!!!! IS MY DF CORRECT???????
     # IS IT NOT SUPPOSED TO BE INVERTIBLE
