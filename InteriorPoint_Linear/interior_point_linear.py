@@ -187,4 +187,5 @@ if __name__ == "__main__":
     # print(np.allclose(x, point[:k]))
     
     # Prob 5
-    leastAbsoluteDeviations()
+    # leastAbsoluteDeviations()
+    pass
