@@ -110,6 +110,7 @@ def interiorPoint(A, b, c, niter=20, tol=1e-16, verbose=False):
     
     def step_size(x, mu, direction): # compute step size
         n = len(mu)
+        # Use try except (in the case that all terms are nonnegative, return some value that later defaults to 1)
         try: alpha_max = min((-mu / direction[-n:])[direction[-n:] < 0])  # delta mu is last n elements
         except: alpha_max = 2
         try: delta_max = min((-x / direction[:n])[direction[:n] < 0])  # delta x is first n elements
@@ -135,16 +136,55 @@ def interiorPoint(A, b, c, niter=20, tol=1e-16, verbose=False):
 
 def leastAbsoluteDeviations(filename='simdata.txt'):
     """Generate and show the plot requested in the lab."""
-    raise NotImplementedError("Problem 5 Incomplete")
+    # Read the data
+    with open(filename, "r") as file:
+        data = file.read().splitlines()
+    data = [point.split(" ") for point in data]  # split by spaces
+    data = np.array(data).astype(float) # make it an array of floats
+
+    # Initialize vectors c and y (see code box in the lab))
+    m = data.shape[0]
+    n = data.shape[1] - 1
+    c = np.zeros(3*m + 2*(n + 1))
+    c[:m] = 1
+    y = np.empty(2*m)
+    y[::2] = -data[:, 0]
+    y[1::2] = data[:, 0]
+    x = data[:, 1:]
+
+    # Set up matrix A (see code box in the lab))
+    A = np.ones((2*m, 3*m + 2*(n + 1)))
+    A[::2, :m] = np.eye(m)
+    A[1::2, :m] = np.eye(m)
+    A[::2, m:m+n] = -x
+    A[1::2, m:m+n] = x
+    A[::2, m+n:m+2*n] = x
+    A[1::2, m+n:m+2*n] = -x
+    A[::2, m+2*n] = -1
+    A[1::2, m+2*n+1] = -1
+    A[:, m+2*n+2:] = -np.eye(2*m, 2*m)
+
+    sol = interiorPoint(A, y, c, niter=10)[0]  # get the solution
+    # Extract the information we want
+    beta = sol[m:m+n] - sol[m+n:m+2*n]
+    b = sol[m+2*n] - sol[m+2*n+1]
+
+    slope, intercept = linregress(data[:,1], data[:,0])[:2]
+    domain = np.linspace(0, 10, 200)
+    plt.plot(domain, domain*slope+intercept, c="red", label="Least Squares solution")
+    plt.plot(domain, domain*beta + b, c="green", label="LAD")
+    plt.scatter(data[:,1], data[:,0])
+    plt.legend()
+    plt.show()
 
 
 
 if __name__ == "__main__":
     # Prob 1-4
-    j, k = 7, 5
-    A, b, c, x = randomLP(j, k)
-    point, value = interiorPoint(A, b, c)
-    print(np.allclose(x, point[:k]))
+    # j, k = 7, 5
+    # A, b, c, x = randomLP(j, k)
+    # point, value = interiorPoint(A, b, c)
+    # print(np.allclose(x, point[:k]))
     
-    # HELP!!!!! IS MY DF CORRECT???????
-    # IS IT NOT SUPPOSED TO BE INVERTIBLE
+    # Prob 5
+    leastAbsoluteDeviations()
