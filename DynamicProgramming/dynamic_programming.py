@@ -1,8 +1,8 @@
 # dynamic_programming.py
 """Volume 2: Dynamic Programming.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 323
+3/17/24
 """
 
 import numpy as np
@@ -19,7 +19,11 @@ def calc_stopping(N):
         (float): The maximum expected value of choosing the best candidate.
         (int): The index of the maximum expected value.
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    v = np.zeros(N)  # Initialize it to be all zeros
+    for i in range(N - 1, 0, -1):   # Iterate backwards starting at 2nd-to last element
+        v[i-1] = max((i/(i+1))*v[i] + 1/N, v[i])  # (24.1, with indices shifted)
+
+    return max(v), np.argmax(v) + 1   # Add one since index starts at 0
 
 
 # Problem 2
@@ -88,3 +92,7 @@ def find_policy(T, N, B, u=np.sqrt):
             consume at each time.
     """
     raise NotImplementedError("Problem 7 Incomplete")
+
+
+if __name__=="__main__":
+    print(calc_stopping(4))
