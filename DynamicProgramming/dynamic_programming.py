@@ -6,6 +6,7 @@ MATH 323
 """
 
 import numpy as np
+from matplotlib import pyplot as plt
 
 
 def calc_stopping(N):
@@ -37,7 +38,24 @@ def graph_stopping_times(M):
     Returns:
         (float): The optimal stopping percent of candidates for M.
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    # Initialize vairiables
+    Ns = np.arange(3, M+1)
+    optimal_percentages = []
+    max_vals = []
+
+    for N in Ns:
+        max_val, t0 = calc_stopping(N)  # Call prob 1
+        optimal_percentages.append(t0 / N)  # Gather data
+        max_vals.append(max_val)
+
+    # Plot it
+    plt.plot(Ns, optimal_percentages, label="Optimal Stopping Percentage")
+    plt.plot(Ns, max_vals, label="Maximum Probability")
+    plt.legend()
+    plt.xlabel("M")
+    plt.show()
+
+    return max_val
 
 
 # Problem 3
@@ -95,4 +113,9 @@ def find_policy(T, N, B, u=np.sqrt):
 
 
 if __name__=="__main__":
-    print(calc_stopping(4))
+    # Prob 1
+    # print(calc_stopping(4))
+
+    # Prob 2
+    print(graph_stopping_times(1000))
+    # Is my graph correct??????
