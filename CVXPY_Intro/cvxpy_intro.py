@@ -57,7 +57,7 @@ def l1Min(A, b):
         The optimizer x (ndarray)
         The optimal value (float)
     """
-    x = cp.Variable(4, nonneg=True) # Declare x
+    x = cp.Variable(len(A[0]), nonneg=True) # Declare x
     c = cp.norm(x, 1)
     objective = cp.Minimize(c)  # Declare objective function
 
@@ -195,11 +195,11 @@ if __name__=="__main__":
     # print("Optimal Value:", val)
 
     # Prob 2
-    # A = np.array([[1, 2, 1, 1], [0, 3, -2, -1]])
-    # b = np.array([7, 4])
-    # optimizer, val = l1Min(A, b)
-    # print("Optimizer:", optimizer)
-    # print("Optimal Value:", val)
+    A = np.array([[1, 2, 1, 1], [0, 3, -2, -1]])
+    b = np.array([7, 4])
+    optimizer, val = l1Min(A, b)
+    print("Optimizer:", optimizer)
+    print("Optimal Value:", val)
 
     # Prob 3
     # print(prob3())
