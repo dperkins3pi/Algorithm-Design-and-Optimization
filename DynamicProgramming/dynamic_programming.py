@@ -70,7 +70,12 @@ def get_consumption(N, u=lambda x: np.sqrt(x)):
     Returns:
         C ((N+1,N+1) ndarray): The consumption matrix.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    C = np.zeros((N+1, N+1))   # Start with all zeros
+    for i in range(N+1): 
+        for j in range(N+1):  # Only update lower-left triangle
+            if i > j: C[i,j] = (i - j) / N   # calculate w
+    C = u(C)   # apply utility function
+    return C
 
 
 # Problems 4-6
@@ -90,7 +95,28 @@ def eat_cake(T, N, B, u=lambda x: np.sqrt(x)):
         P ((N+1,T+1) ndarray): The matrix where the (ij)th entry is the
             number of pieces to consume given i pieces at time j.
     """
-    raise NotImplementedError("Problems 4-6 Incomplete")
+    A = np.zeros((N+1, T+1))
+    w = np.arange(N + 1)/N
+
+    CV = np.zeros((N+1, N+1))  # Initialize it to be 0s
+    P = np.zeros((N+1, T+1))   # To determine the optimal policy
+
+    A[:,T] = u(w)   # Compute matrix at t=T
+    P[:,T] = w  # Compute last column
+    for t in range(T, 0, -1):   # For each t (starting at the end)
+        for i in range(N+1):   # Rows
+            for j in range(N+1):   # Columns
+                pieces = w[i] - w[j]   # wi-wj
+                # If less than 0, keep it at 0
+                if pieces >= 0: CV[i,j] = u(pieces) + B*A[j, t]
+        A[:,t-1] = np.max(CV, axis=1)  # Update the corresponding column in A
+
+        # Compute the optimal policy
+        for i in range(N+1):
+            j = np.argmax(CV[i])
+            P[i, t-1] = w[i] - w[j]
+
+    return A, P
 
 
 # Problem 7
@@ -109,7 +135,16 @@ def find_policy(T, N, B, u=np.sqrt):
         ((T+1,) ndarray): The matrix describing the optimal percentage to
             consume at each time.
     """
-    raise NotImplementedError("Problem 7 Incomplete")
+    A, P = eat_cake(T, N, B, u)   # Get policy matrix
+    c = np.zeros(T+1)
+
+    i = 0
+    row = N   # Start at row N
+    for i in range(T + 1):
+        action = P[row, i]
+        row -= round(action * N)   # Convert to integer and move up that amount
+        c[i] = action
+    return c
 
 
 if __name__=="__main__":
@@ -117,5 +152,16 @@ if __name__=="__main__":
     # print(calc_stopping(4))
 
     # Prob 2
-    print(graph_stopping_times(1000))
+    # print(graph_stopping_times(1000))
     # Is my graph correct??????
+
+    # Prob 3
+    # print(get_consumption(4))
+
+    # Prob 4-6
+    # A, P = eat_cake(3, 4, 0.9)
+    # print(A)
+    # print(P)
+
+    # Prob 7
+    print(find_policy(3, 4, 0.9))
