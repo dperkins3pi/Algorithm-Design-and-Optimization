@@ -58,7 +58,7 @@ def value_iteration(P, nS ,nA, beta=1.0, tol=1e-8, maxiter=3000):
             actions = np.zeros(nA)   # Part in {} for equation 25.5
             for j in range(nA):   # Calculate each part
                 p, s, u, is_terminal = P[i][j][0]
-                actions[j] = p * (u + beta * v[s])
+                actions[j] += p * (u + beta * v[s])
             vk[i] = max(actions)   # equation 25.5
         if(np.linalg.norm(v - vk) < tol): break  # Already converged
         v = np.copy(vk)
@@ -80,7 +80,14 @@ def extract_policy(P, nS, nA, v, beta=1.0):
     Returns:
         policy (ndarray): which direction to move in from each square.
     """
-    raise NotImplementedError("Problem 2 Incomplete")
+    policy = np.zeros_like(v)
+    for i in range(nS):   # For each state
+        actions = np.zeros(nA)   # Part in {} for equation 25.6
+        for j in range(nA):   # Calculate each part
+            p, s, u, is_terminal = P[i][j][0]
+            actions[j] += p * (u + beta * v[s])
+        policy[i] = np.argmax(actions)   # equation 25.6
+    return policy
 
 
 # Problem 3
@@ -99,7 +106,16 @@ def compute_policy_v(P, nS, nA, policy, beta=1.0, tol=1e-8):
     Returns:
         v (ndarray): The discrete values for the true value function.
     """
-    raise NotImplementedError("Problem 3 Incomplete")
+    v = np.zeros(nS)  # Initialize
+    vk = np.zeros(nS)
+    while True:  # Loop until hit max
+        v = np.copy(vk)
+        for i in range(nS):
+            a = policy[i]   # Get action from optimal action
+            p, s, u, is_terminal = P[i][a][0]
+            vk[i] = p * (u + beta * v[s])  # (25.7)
+        if (np.linalg.norm(v - vk) < tol): break   # Convergence
+    return vk
 
 
 # Problem 4
@@ -120,7 +136,13 @@ def policy_iteration(P, nS, nA, beta=1.0, tol=1e-8, maxiter=200):
         policy (ndarray): which direction to move in each square.
         n (int): number of iterations
     """
-    raise NotImplementedError("Problem 4 Incomplete")
+    pi = np.ones(nS)   # Initialize to all ones
+    for k in range(maxiter):
+        v = compute_policy_v(P, nS, nA, pi)   # Evaluate polict
+        pik = extract_policy(P, nS, nA, v)    # Improve polict
+        if (np.linalg.norm(pik - pi)) < tol: break   # Convergence
+        pi = pik
+    return v, pi, k+1
 
 
 # Problem 5 and 6
@@ -158,4 +180,20 @@ def run_simulation(env, policy, beta=1.0):
 
 
 if __name__=="__main__":
-    print(value_iteration(P, 4, 4))
+    # Prob 1
+    # print(value_iteration(P, 4, 4))
+
+    # Prob 2
+    # v, n = value_iteration(P, 4, 4)
+    # print(extract_policy(P, 4, 4, v))
+
+    # Prob 3
+    # v, n = value_iteration(P, 4, 4)
+    # policy = extract_policy(P, 4, 4, v)
+    # print(compute_policy_v(P, 4, 4, policy))
+
+    # Prob 4
+    V, pi, k = policy_iteration(P, 4, 4)
+    print(V)
+    print(pi)
+    print(k)
