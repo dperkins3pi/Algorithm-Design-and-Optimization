@@ -1,8 +1,8 @@
 # policy_iteration.py
 """Volume 2: Policy Function Iteration.
-<Name>
-<Class>
-<Date>
+Daniel Perkins
+MATH 323
+3/21/24
 """
 
 import numpy as np
@@ -33,6 +33,7 @@ P[3][2] = [(0, 0, 0, True)]
 P[3][3] = [(0, 0, 1, True)]
 
 
+
 # Problem 1
 def value_iteration(P, nS ,nA, beta=1.0, tol=1e-8, maxiter=3000):
     """Perform Value Iteration according to the Bellman optimality principle.
@@ -50,7 +51,18 @@ def value_iteration(P, nS ,nA, beta=1.0, tol=1e-8, maxiter=3000):
        v (ndarray): The discrete values for the true value function.
        n (int): number of iterations
     """
-    raise NotImplementedError("Problem 1 Incomplete")
+    v = np.zeros(nS)
+    vk = np.copy(v)
+    for n in range(1, maxiter + 1):  # Loop until hit max
+        for i in range(nS):   # For each state
+            actions = np.zeros(nA)   # Part in {} for equation 25.5
+            for j in range(nA):   # Calculate each part
+                p, s, u, is_terminal = P[i][j][0]
+                actions[j] = p * (u + beta * v[s])
+            vk[i] = max(actions)   # equation 25.5
+        if(np.linalg.norm(v - vk) < tol): break  # Already converged
+        v = np.copy(vk)
+    return v, n
 
 
 # Problem 2
@@ -143,3 +155,7 @@ def run_simulation(env, policy, beta=1.0):
     total reward (float): Value of the total reward recieved under policy.
     """
     raise NotImplementedError("Problem 6 Incomplete")
+
+
+if __name__=="__main__":
+    print(value_iteration(P, 4, 4))
