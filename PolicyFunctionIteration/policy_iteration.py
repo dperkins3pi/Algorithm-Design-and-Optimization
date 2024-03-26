@@ -161,7 +161,29 @@ def frozen_lake(basic_case=True, M=1000, render=False):
     pi_policy (ndarray): The optimal policy for policy iteration.
     pi_total_rewards (float): The mean expected value for following the policy iteration optimal policy.
     """
-    raise NotImplementedError("Problem 5 Incomplete")
+    # Initialize environemnt
+    if basic_case: 
+        if render: env = gym.make("FrozenLake-v1", desc=None, map_name='4x4', is_slippery=True, render_mode='human')
+        else: env = gym.make("FrozenLake-v1", desc=None, map_name='4x4', is_slippery=True)
+    else: 
+        if render: env = gym.make("FrozenLake-v1", desc=None, map_name='8x8', is_slippery=True, render_mode='human')
+        else: env = gym.make("FrozenLake-v1", desc=None, map_name='8x8', is_slippery=True)
+    
+    # Get data from gymnasium
+    observation, info = env.reset()
+    nS = env.observation_space.n
+    nA = env.action_space.n
+    P = env.P
+    env.close()
+
+    # ARE THESE THE RIGHT THINGS????????
+    vi_policy, _ = value_iteration(P, nS, nA)
+    vi_total_rewards = 0
+    pi_value_func = extract_policy(P, nS, nA, vi_policy)
+    _, pi_policy, _ = policy_iteration(P, nS, nA)
+    pi_total_rewards = 0
+    return vi_policy, vi_total_rewards, pi_value_func, pi_policy, pi_total_rewards
+
 
 
 # Problem 6
@@ -193,7 +215,15 @@ if __name__=="__main__":
     # print(compute_policy_v(P, 4, 4, policy))
 
     # Prob 4
-    V, pi, k = policy_iteration(P, 4, 4)
-    print(V)
-    print(pi)
-    print(k)
+    # V, pi, k = policy_iteration(P, 4, 4)
+    # print(V)
+    # print(pi)
+    # print(k)
+
+    # Prob 5
+    vi_policy, vi_total_rewards, pi_value_func, pi_policy, pi_total_rewards = frozen_lake(M=100, render=False)
+    print("vi_policy\n", vi_policy)
+    print("vi_total_rewards\n", vi_total_rewards)
+    print("pi_value_func\n", pi_value_func)
+    print("pi_policy\n", pi_policy)
+    print("pi_total_rewards\n", pi_total_rewards)

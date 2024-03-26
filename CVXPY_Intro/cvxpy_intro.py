@@ -61,7 +61,7 @@ def l1Min(A, b):
     c = cp.norm(x, 1)
     objective = cp.Minimize(c)  # Declare objective function
 
-    # Constraints
+    # The Constraints
     constraints = [A @ x == b]
 
     # Assemle the problem and solve ir
