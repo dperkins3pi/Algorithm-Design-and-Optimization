@@ -152,7 +152,7 @@ if __name__=="__main__":
     # print(calc_stopping(4))
 
     # Prob 2
-    # print(graph_stopping_times(1000))
+    print(graph_stopping_times(1000))
     # Is my graph correct??????
 
     # Prob 3

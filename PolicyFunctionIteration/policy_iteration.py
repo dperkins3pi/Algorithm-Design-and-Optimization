@@ -1,5 +1,5 @@
-# policy_iteration.py
-"""Volume 2: Policy Function Iteration.
+"""
+Volume 2: Policy Function Iteration.
 Daniel Perkins
 MATH 323
 3/21/24
@@ -84,8 +84,9 @@ def extract_policy(P, nS, nA, v, beta=1.0):
     for i in range(nS):   # For each state
         actions = np.zeros(nA)   # Part in {} for equation 25.6
         for j in range(nA):   # Calculate each part
-            p, s, u, is_terminal = P[i][j][0]
-            actions[j] += p * (u + beta * v[s])
+            for tuple in P[i][j]:
+                p, s, u, is_terminal = tuple
+                actions[j] += p * (u + beta * v[s])
         policy[i] = np.argmax(actions)   # equation 25.6
     return policy
 
@@ -107,15 +108,18 @@ def compute_policy_v(P, nS, nA, policy, beta=1.0, tol=1e-8):
         v (ndarray): The discrete values for the true value function.
     """
     v = np.zeros(nS)  # Initialize
-    vk = np.zeros(nS)
     while True:  # Loop until hit max
-        v = np.copy(vk)
+        v_new = np.copy(v)
         for i in range(nS):
-            a = policy[i]   # Get action from optimal action
-            p, s, u, is_terminal = P[i][a][0]
-            vk[i] = p * (u + beta * v[s])  # (25.7)
-        if (np.linalg.norm(v - vk) < tol): break   # Convergence
-    return vk
+            action_vector = np.zeros(nA)
+            a = int(policy[i])   # Get action from optimal action
+            for tuple in P[i][a]:   # Sum up for all tuples
+                p, s, u, is_terminal = tuple
+                action_vector[a] += p * (u + beta * v[s])  # (25.7)
+            v_new[i] = np.max(action_vector)
+        if (np.linalg.norm(v_new - v) < tol): break   # Convergence
+        v = v_new
+    return v_new
 
 
 # Problem 4
@@ -136,10 +140,10 @@ def policy_iteration(P, nS, nA, beta=1.0, tol=1e-8, maxiter=200):
         policy (ndarray): which direction to move in each square.
         n (int): number of iterations
     """
-    pi = np.ones(nS)   # Initialize to all ones
+    pi = np.zeros(nS)   # Initialize to all ones
     for k in range(maxiter):
-        v = compute_policy_v(P, nS, nA, pi)   # Evaluate polict
-        pik = extract_policy(P, nS, nA, v)    # Improve polict
+        v = compute_policy_v(P, nS, nA, pi, beta=beta)   # Evaluate polict
+        pik = extract_policy(P, nS, nA, v, beta=beta)    # Improve polict
         if (np.linalg.norm(pik - pi)) < tol: break   # Convergence
         pi = pik
     return v, pi, k+1
@@ -163,31 +167,39 @@ def frozen_lake(basic_case=True, M=1000, render=False):
     """
     # Initialize environemnt
     if basic_case: 
-        if render: env = gym.make("FrozenLake-v1", desc=None, map_name='4x4', is_slippery=True, render_mode='human')
-        else: env = gym.make("FrozenLake-v1", desc=None, map_name='4x4', is_slippery=True)
+        if render: env = gym.make("FrozenLake-v1", is_slippery=True, render_mode='human').env
+        else: env = gym.make("FrozenLake-v1", is_slippery=True).env
     else: 
-        if render: env = gym.make("FrozenLake-v1", desc=None, map_name='8x8', is_slippery=True, render_mode='human')
-        else: env = gym.make("FrozenLake-v1", desc=None, map_name='8x8', is_slippery=True)
+        if render: env = gym.make("FrozenLake-v1", map_name='8x8', is_slippery=True, render_mode='human').env
+        else: env = gym.make("FrozenLake-v1", map_name='8x8', is_slippery=True).env
     
     # Get data from gymnasium
-    observation, info = env.reset()
     nS = env.observation_space.n
     nA = env.action_space.n
     P = env.P
-    env.close()
 
-    # ARE THESE THE RIGHT THINGS????????
-    vi_policy, _ = value_iteration(P, nS, nA)
+    # Calculate the policies
+    pi_value_func, pi_policy, _ = policy_iteration(P, nS, nA)
+    vi_policy = extract_policy(P, nS, nA, pi_value_func, beta=1)
+
+    # Calculate total rewards
     vi_total_rewards = 0
-    pi_value_func = extract_policy(P, nS, nA, vi_policy)
-    _, pi_policy, _ = policy_iteration(P, nS, nA)
     pi_total_rewards = 0
+    for i in range(M):
+        vi_total_rewards += run_simulation(env, vi_policy, render=render)
+        pi_total_rewards += run_simulation(env, pi_policy, render=render)
+    # We want the mean reward
+    vi_total_rewards /= M
+    pi_total_rewards /= M
+
+    env.close()   # Close the environment
+
     return vi_policy, vi_total_rewards, pi_value_func, pi_policy, pi_total_rewards
 
 
 
 # Problem 6
-def run_simulation(env, policy, beta=1.0):
+def run_simulation(env, policy, render=False, beta=1.0):
     """ Evaluates policy by using it to run a simulation and calculate the reward.
 
     Parameters:
@@ -198,7 +210,20 @@ def run_simulation(env, policy, beta=1.0):
     Returns:
     total reward (float): Value of the total reward recieved under policy.
     """
-    raise NotImplementedError("Problem 6 Incomplete")
+    try:
+        observation = env.reset()[0]   # Reset environment
+        done = False
+        total_reward = 0
+        while not done:   # Take the optimal action until the environment is done
+            action = int(policy[observation])   # determine the action to make
+            observation, reward, done, trunc, info = env.step(action)
+            total_reward += reward   # Update total_reward
+            if(render): env.render()
+    finally:
+        env.reset()
+
+    return total_reward
+
 
 
 if __name__=="__main__":
@@ -220,10 +245,10 @@ if __name__=="__main__":
     # print(pi)
     # print(k)
 
-    # Prob 5
-    vi_policy, vi_total_rewards, pi_value_func, pi_policy, pi_total_rewards = frozen_lake(M=100, render=False)
-    print("vi_policy\n", vi_policy)
-    print("vi_total_rewards\n", vi_total_rewards)
-    print("pi_value_func\n", pi_value_func)
-    print("pi_policy\n", pi_policy)
-    print("pi_total_rewards\n", pi_total_rewards)
+    # Prob 5, 6
+    vi_policy, vi_total_rewards, pi_value_func, pi_policy, pi_total_rewards = frozen_lake(render=False, basic_case=True)
+    # print("vi_policy:", vi_policy)
+    print("vi_total_rewards:", vi_total_rewards)
+    # print("pi_value_func:", pi_value_func)
+    # print("pi_policy:", pi_policy)
+    print("pi_total_rewards:", pi_total_rewards)
