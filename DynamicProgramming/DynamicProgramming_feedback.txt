@@ -35,3 +35,40 @@ Total score: 41/50 = 82.0%
 
 -------------------------------------------------------------------------------
 
+04/11/24 09:13
+
+Problem 1 (5 points):
+
+	Correct response: (0.380916372562691, 9)
+	Student response: (0.380916372562691, 1)
+Score += 0
+
+Problem 2 (5 points):
+
+	Correct response: 0.368
+	Student response: 0.3681956172017045
+Both lines should flatten out at .37
+Score += 1
+
+Problem 3 (5 points):
+Score += 5
+
+Problem 4 (5 points):
+Score += 5
+
+Problem 5 (10 points):
+Score += 10
+
+Problem 6 (10 points):
+Score += 10
+
+Problem 7 (5 points):
+Score += 5
+
+Code Quality (5 points):
+Score += 5
+
+Total score: 41/50 = 82.0%
+
+-------------------------------------------------------------------------------
+
