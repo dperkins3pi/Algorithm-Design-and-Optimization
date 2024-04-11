@@ -24,7 +24,7 @@ def calc_stopping(N):
     for i in range(N - 1, 0, -1):   # Iterate backwards starting at 2nd-to last element
         v[i-1] = max((i/(i+1))*v[i] + 1/N, v[i])  # (24.1, with indices shifted)
 
-    return max(v), np.argmax(v) + 1   # Add one since index starts at 0
+    return max(v), N - np.argmax(v[::-1])   # Reverse to get last occurence
 
 
 # Problem 2
@@ -149,10 +149,10 @@ def find_policy(T, N, B, u=np.sqrt):
 
 if __name__=="__main__":
     # Prob 1
-    # print(calc_stopping(4))
+    print(calc_stopping(25))
 
     # Prob 2
-    print(graph_stopping_times(1000))
+    # print(graph_stopping_times(1000))
     # Is my graph correct??????
 
     # Prob 3
@@ -164,4 +164,4 @@ if __name__=="__main__":
     # print(P)
 
     # Prob 7
-    print(find_policy(3, 4, 0.9))
+    # print(find_policy(3, 4, 0.9))
