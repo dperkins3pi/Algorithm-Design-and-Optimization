@@ -55,7 +55,7 @@ def graph_stopping_times(M):
     plt.xlabel("M")
     plt.show()
 
-    return max_val
+    return optimal_percentages[-1]
 
 
 # Problem 3
@@ -149,10 +149,10 @@ def find_policy(T, N, B, u=np.sqrt):
 
 if __name__=="__main__":
     # Prob 1
-    print(calc_stopping(25))
+    # print(calc_stopping(25))
 
     # Prob 2
-    # print(graph_stopping_times(1000))
+    print(graph_stopping_times(1000))
     # Is my graph correct??????
 
     # Prob 3
